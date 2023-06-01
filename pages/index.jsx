@@ -7,8 +7,8 @@ const IndexPage = () => {
     <>
       <MainLayOut>
         <>
-          <div className="w-full my-6 lg:my-12 container px-6 mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between pb-4 border-b border-gray-300">
-            <div>
+          <div className="my-6 max-w-full container px-6 mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between pb-4 border-b border-gray-300">
+            <>
               <h4 className="text-2xl font-bold leading-tight text-gray-800">
                 User Profile
               </h4>
@@ -79,7 +79,7 @@ const IndexPage = () => {
                   <span>Started on 29 Jan 2020</span>
                 </li>
               </ul>
-            </div>
+            </>
             <div className="mt-6 lg:mt-0">
               <button className="mx-2 my-2 bg-white transition duration-150 ease-in-out focus:outline-none hover:bg-gray-100 rounded text-indigo-700 px-6 py-2 text-sm">
                 Back
