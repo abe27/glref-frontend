@@ -1,7 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 const NavBar = () => {
+  const router = useRouter();
   const [show, setShow] = useState(false);
   const [profile, setProfile] = useState(false);
   return (
@@ -28,7 +30,7 @@ const NavBar = () => {
             </svg>
             <div className="mt-4">
               <h3 className="text-base text-gray-800 font-bold tracking-normal leading-tight ml-3 hidden lg:block">
-                The North
+                RIA App
               </h3>
             </div>
           </div>
@@ -102,7 +104,7 @@ const NavBar = () => {
               >
                 {profile ? (
                   <ul
-                    className="p-2 w-40 border-r bg-white absolute rounded z-0 right-0 shadow mt-72"
+                    className="p-2 w-40 border-r bg-white absolute rounded z-50 right-0 shadow mt-72"
                     onMouseLeave={() => setProfile(false)}
                   >
                     <li className="cursor-pointer text-gray-600 text-sm leading-3 tracking-normal py-2 hover:text-indigo-700 focus:text-indigo-700 focus:outline-none">
@@ -165,7 +167,10 @@ const NavBar = () => {
                       </svg>
                       <span className="ml-2">Account Settings</span>
                     </li>
-                    <li className="cursor-pointer text-gray-600 text-sm leading-3 tracking-normal mt-2 py-2 hover:text-indigo-700 flex items-center focus:text-indigo-700 focus:outline-none">
+                    <li
+                      className="cursor-pointer text-gray-600 text-sm leading-3 tracking-normal mt-2 py-2 hover:text-indigo-700 flex items-center focus:text-indigo-700 focus:outline-none"
+                      onClick={() => router.push("/logout")}
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="icon icon-tabler icon-tabler-logout"

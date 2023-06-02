@@ -19,6 +19,7 @@
     "@nextui-org/react": "^1.0.0-beta.13",
     "autoprefixer": "10.4.14",
     "bootstrap-icons": "^1.10.5",
+    "daisyui": "^3.0.0",
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.4",
     "framer-motion": "^10.12.16",
@@ -27,6 +28,9 @@
     "postcss": "8.4.24",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "sass": "^1.62.1",
+    "sweetalert2": "^11.7.10",
+    "sweetalert2-react-content": "^5.0.7",
     "tailwindcss": "latest"
   }
 }
