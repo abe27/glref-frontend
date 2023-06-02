@@ -13,7 +13,7 @@
     "@chakra-ui/react": "^2.7.0",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
-    "@faker-js/faker": "^7.6.0",
+    "@faker-js/faker": "latest",
     "@headlessui/react": "latest",
     "@heroicons/react": "latest",
     "@nextui-org/react": "^1.0.0-beta.13",
