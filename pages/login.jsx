@@ -53,7 +53,7 @@ const AuthPage = () => {
         duration: 9000,
         isClosable: true,
         position: "top",
-        onCloseComplete: () => router.push("/auth"),
+        onCloseComplete: () => router.push("/login"),
       });
     }
 

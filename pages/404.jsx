@@ -8,9 +8,9 @@ const NotFoundPage = () => {
   const [countDown, setCountDown] = useState(5);
 
   useEffect(() => {
-    if (countDown <= 0) {
-      router.back();
-    }
+    // if (countDown <= 0) {
+    //   router.back();
+    // }
 
     const timer = setTimeout(() => {
       setCountDown(countDown - 1);

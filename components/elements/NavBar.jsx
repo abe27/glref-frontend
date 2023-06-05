@@ -1,8 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
 const NavBar = () => {
+  const { data: session } = useSession();
   const router = useRouter();
   const [show, setShow] = useState(false);
   const [profile, setProfile] = useState(false);
@@ -208,8 +210,10 @@ const NavBar = () => {
                     alt="logo"
                   />
                   <div className="">
-                    <p className="text-gray-800 text-sm ml-2">Jane Doe</p>
-                    <p className="text-gray-800 text-sm ml-2">Administrator</p>
+                    <p className="text-gray-800 text-sm ml-2">
+                      {session?.user.userName}
+                    </p>
+                    <p className="text-gray-800 text-sm ml-2">-</p>
                   </div>
                 </div>
               </div>

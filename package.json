@@ -29,7 +29,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "sass": "^1.62.1",
-    "sweetalert2": "^11.7.10",
+    "sweetalert2": "^11.4.8",
     "sweetalert2-react-content": "^5.0.7",
     "tailwindcss": "latest"
   }

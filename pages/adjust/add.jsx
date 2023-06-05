@@ -1,16 +1,24 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { Input, Dropdown, Button, Table } from "@nextui-org/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-
-import { MainLayOut } from "@/components";
+import { AutoComplete, MainLayOut } from "@/components";
+import { useSession } from "next-auth/react";
 const MySwal = withReactContent(Swal);
 
 const AddAdjustPage = () => {
+  const { data: session } = useSession();
   const router = useRouter();
   const { title } = router.query;
+  const [bookingData, setBookingData] = useState([]);
+  const [whsData, setWhsData] = useState([]);
+  const [coorData, setCoorData] = useState([]);
+  const [departmentData, setDepartmentData] = useState([]);
+  const [unitData, setUnitData] = useState([]);
+  const [productData, setProductData] = useState([]);
 
   const ConfirmDelete = () => {
     MySwal.fire({
@@ -39,6 +47,227 @@ const AddAdjustPage = () => {
       template: "#myTemplate",
     });
   };
+
+  const fetchBooking = async () => {
+    setBookingData([]);
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", session?.user.accessToken);
+
+    var requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    const res = await fetch(`${process.env.API_HOST}/book`, requestOptions);
+
+    if (res.ok) {
+      let doc = [];
+      const data = await res.json();
+      data.data.map((i) => {
+        doc.push({
+          id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
+          code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
+          name: `${i.fccode.replace(/^\s+|\s+$/gm, "")}-${i.fcname.replace(
+            /^\s+|\s+$/gm,
+            ""
+          )}`,
+        });
+      });
+      setBookingData(doc);
+    }
+  };
+
+  const fetchWhs = async () => {
+    setWhsData([]);
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", session?.user.accessToken);
+
+    var requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    const res = await fetch(`${process.env.API_HOST}/whs`, requestOptions);
+
+    if (res.ok) {
+      let doc = [];
+      const data = await res.json();
+      data.data.map((i) => {
+        doc.push({
+          id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
+          code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
+          name: `${i.fccode.replace(/^\s+|\s+$/gm, "")}-${i.fcname.replace(
+            /^\s+|\s+$/gm,
+            ""
+          )}`,
+        });
+      });
+      setWhsData(doc);
+    }
+  };
+
+  const fetchCoor = async () => {
+    setCoorData([]);
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", session?.user.accessToken);
+
+    var requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    const res = await fetch(`${process.env.API_HOST}/coor`, requestOptions);
+
+    if (res.ok) {
+      let doc = [];
+      const data = await res.json();
+      data.data.map((i) => {
+        doc.push({
+          id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
+          code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
+          name: `${i.fccode.replace(/^\s+|\s+$/gm, "")}-${i.fcname.replace(
+            /^\s+|\s+$/gm,
+            ""
+          )}`,
+        });
+      });
+      setCoorData(doc);
+    }
+  };
+
+  const fetchDepartment = async () => {
+    setDepartmentData([]);
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", session?.user.accessToken);
+
+    var requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    const res = await fetch(
+      `${process.env.API_HOST}/department`,
+      requestOptions
+    );
+
+    if (res.ok) {
+      let doc = [];
+      const data = await res.json();
+      data.data.map((i) => {
+        doc.push({
+          id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
+          code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
+          name: `${i.fccode.replace(/^\s+|\s+$/gm, "")}-${i.fcname.replace(
+            /^\s+|\s+$/gm,
+            ""
+          )}`,
+        });
+      });
+      setDepartmentData(doc);
+    }
+  };
+
+  const fetchUnit = async () => {
+    setUnitData([]);
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", session?.user.accessToken);
+
+    var requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    const res = await fetch(`${process.env.API_HOST}/unit`, requestOptions);
+
+    if (res.ok) {
+      let doc = [];
+      const data = await res.json();
+      data.data.map((i) => {
+        doc.push({
+          id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
+          code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
+          name: `${i.fccode.replace(/^\s+|\s+$/gm, "")}-${i.fcname.replace(
+            /^\s+|\s+$/gm,
+            ""
+          )}`,
+        });
+      });
+      setUnitData(doc);
+    }
+  };
+
+  const fetchProduct = async () => {
+    setProductData([]);
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", session?.user.accessToken);
+
+    var requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    const res = await fetch(
+      `${process.env.API_HOST}/product?type=1,5`,
+      requestOptions
+    );
+
+    if (res.ok) {
+      let doc = [];
+      const data = await res.json();
+      data.data.map((i) => {
+        doc.push({
+          id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
+          code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
+          name: `${i.fccode.replace(/^\s+|\s+$/gm, "")}-${i.fcname.replace(
+            /^\s+|\s+$/gm,
+            ""
+          )}`,
+        });
+      });
+      setProductData(doc);
+    }
+  };
+
+  const selectedBookingData = (txt) => {
+    console.dir(txt);
+  };
+
+  const selectedWhsData = (txt) => {
+    console.dir(txt);
+  };
+
+  const selectedCoorData = (txt) => {
+    console.dir(txt);
+  };
+
+  const selectedDepartmentData = (txt) => {
+    console.dir(txt);
+  };
+
+  const selectedUnitData = (txt) => {
+    console.dir(txt);
+  };
+
+  const selectedProductData = (txt) => {
+    console.dir(txt);
+  };
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchBooking();
+      fetchWhs();
+      fetchCoor();
+      fetchDepartment();
+      fetchUnit();
+      fetchProduct();
+    }
+  }, [session]);
 
   return (
     <>
@@ -70,14 +299,11 @@ const AddAdjustPage = () => {
                 </>
               </div>
               <div className="pt-2">
-                <select class="select select-ghost w-full max-w-xs">
-                  <option disabled selected>
-                    เลือกหน่วย
-                  </option>
-                  <option>Svelte</option>
-                  <option>Vue</option>
-                  <option>React</option>
-                </select>
+                <AutoComplete
+                  label=""
+                  data={unitData}
+                  selectedData={selectedUnitData}
+                />
               </div>
             </div>
           </div>
@@ -92,7 +318,7 @@ const AddAdjustPage = () => {
         </form>
       </dialog>
       <MainLayOut title={title}>
-        <div class="text-xs breadcrumbs">
+        <div className="text-xs breadcrumbs">
           <ul>
             <li>
               <Link href={"/"}>หน้าแรก</Link>
@@ -106,52 +332,35 @@ const AddAdjustPage = () => {
         <div className="pl-4 rounded bg-gray-50">
           <div className="flex space-x-4">
             <div className="flex space-x-4">
-              <div className="pt-2">เล่มเอกสาร:</div>
-              <Dropdown>
-                <Dropdown.Button light>------</Dropdown.Button>
-                <Dropdown.Menu variant="light" aria-label="Actions">
-                  <Dropdown.Item key="new">
-                    007-ใบรับสินค้าชั่วคราว
-                  </Dropdown.Item>
-                  <Dropdown.Item key="copy">001-XXXXXXX</Dropdown.Item>
-                  <Dropdown.Item key="edit">002-XXXXXXXX</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
+              <AutoComplete
+                label="เล่มเอกสาร"
+                data={bookingData}
+                selectedData={selectedBookingData}
+              />
             </div>
             <div className="flex space-x-4">
-              <div className="pt-2">คลังสินค้า:</div>
-              <Dropdown>
-                <Dropdown.Button light>------</Dropdown.Button>
-                <Dropdown.Menu variant="light" aria-label="Actions">
-                  <Dropdown.Item key="copy">003-XXXXXXX</Dropdown.Item>
-                  <Dropdown.Item key="edit">005-XXXXXXXX</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
+              <AutoComplete
+                label="คลังสินค้า"
+                data={whsData}
+                selectedData={selectedWhsData}
+              />
             </div>
-            <div className="pt-2">คลังสินค้าName</div>
           </div>
           <div className="flex space-x-4 pt-2">
             <div className="flex space-x-4">
-              <div className="pt-2">รหัสผู้ขาย:</div>
-              <Dropdown>
-                <Dropdown.Button light>------</Dropdown.Button>
-                <Dropdown.Menu variant="light" aria-label="Actions">
-                  <Dropdown.Item key="copy">003-XXXXXXX</Dropdown.Item>
-                  <Dropdown.Item key="edit">005-XXXXXXXX</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-              <div className="pt-2">ชื่อผู้ขาย</div>
+              <AutoComplete
+                label="รหัสผู้ขาย"
+                textWidth="w-96"
+                data={coorData}
+                selectedData={selectedCoorData}
+              />
             </div>
             <div className="flex space-x-4">
-              <div className="pt-2">รหัสแผนก:</div>
-              <Dropdown>
-                <Dropdown.Button light>------</Dropdown.Button>
-                <Dropdown.Menu variant="light" aria-label="Actions">
-                  <Dropdown.Item key="copy">003-XXXXXXX</Dropdown.Item>
-                  <Dropdown.Item key="edit">005-XXXXXXXX</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-              <div className="pt-2">ชื่อแผนก</div>
+              <AutoComplete
+                label="รหัสแผนก"
+                data={departmentData}
+                selectedData={selectedDepartmentData}
+              />
             </div>
           </div>
           <div className="flex space-x-4 pt-2">
@@ -169,16 +378,12 @@ const AddAdjustPage = () => {
         <div className="flex justify-between space-x-4">
           <div className="flex justify-start space-x-4">
             <div className="flex space-x-4 pt-2">
-              <div className="pt-2">รหัสสินค้า:</div>
-              <>
-                <Input type="text" />
-              </>
-            </div>
-            <div className="flex space-x-4 pt-2">
-              <div className="pt-2">ชื่อสินค้า:</div>
-              <>
-                <Input type="text" disabled />
-              </>
+              <AutoComplete
+                label="รหัสสินค้า"
+                textWidth="w-96"
+                data={productData}
+                selectedData={selectedProductData}
+              />
             </div>
             <div className="flex space-x-4 pt-2">
               <div className="pt-2">จำนวน:</div>
@@ -187,13 +392,12 @@ const AddAdjustPage = () => {
               </>
             </div>
             <div className="pt-2">
-              <Dropdown>
-                <Dropdown.Button light>เลือกหน่วย</Dropdown.Button>
-                <Dropdown.Menu variant="light" aria-label="Actions">
-                  <Dropdown.Item key="copy">003-XXXXXXX</Dropdown.Item>
-                  <Dropdown.Item key="edit">005-XXXXXXXX</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
+              <AutoComplete
+                label=""
+                textWidth="w-28"
+                data={unitData}
+                selectedData={selectedUnitData}
+              />
             </div>
             <div className="flex space-x-4 pt-2">
               <div className="pt-2">ราคา:</div>
@@ -230,6 +434,7 @@ const AddAdjustPage = () => {
           <Table
             aria-label="Example table with static content"
             css={{
+              zIndex: 0,
               height: "auto",
               minWidth: "100%",
             }}
