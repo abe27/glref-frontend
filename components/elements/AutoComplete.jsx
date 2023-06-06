@@ -1,16 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Fragment, useEffect, useState } from "react";
 import { Combobox, Transition } from "@headlessui/react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { Fragment, useEffect, useState } from "react";
 
 const AutoComplete = ({
+  txtLimit = 3,
+  fullName = true,
   label = "",
   textWidth = "w-full",
   data = [],
   selectedData = {},
+  queryData = false,
+  isClear = false,
 }) => {
-  const [selected, setSelected] = useState(data[0]);
+  const [selected, setSelected] = useState([]);
   const [query, setQuery] = useState("");
+  const [bgWarning, setBgWarning] = useState("");
 
   const filteredData =
     query === ""
@@ -26,16 +31,30 @@ const AutoComplete = ({
     selectedData(selected);
   }, [selected]);
 
+  useEffect(() => {
+    // console.log(`AutoComplete ::=> ${query}`);
+    if (query.length > txtLimit) queryData(query);
+  }, [query]);
+
   return (
     <>
       {label.length > 0 ? <div className="pt-3">{label}:</div> : null}
       <>
         <Combobox value={selected} onChange={setSelected}>
           <div className="relative mt-1">
-            <div className="relative w-full cursor-default overflow-hidden rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
+            <div className="relative w-full cursor-default overflow-hidden rounded-lg shadow text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
               <Combobox.Input
-                className={`border-none ${textWidth} py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0`}
-                displayValue={(data) => data.name}
+                className={`border-none ${textWidth} py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0 ${bgWarning}`}
+                displayValue={(data) => {
+                  if (isClear) {
+                    return "";
+                  }
+
+                  if (fullName) {
+                    return data.name;
+                  }
+                  return data.code;
+                }}
                 onChange={(event) => setQuery(event.target.value)}
               />
               <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
