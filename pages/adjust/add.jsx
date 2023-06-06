@@ -34,6 +34,13 @@ const AddAdjustPage = () => {
   const [selectUnit, setSelectUnit] = useState([]);
   const [selectPrice, setSelectPrice] = useState(0);
 
+  /// Btn Add Data
+  const [booking, setBooking] = useState([]);
+  const [whs, setWhs] = useState([]);
+  const [coor, setCoor] = useState([]);
+  const [department, setDepartment] = useState([]);
+  const [invNo, setInvNo] = useState(null);
+
   const ConfirmDelete = (obj) => {
     MySwal.fire({
       title: "ยืนยันคำสั่ง!",
@@ -284,18 +291,22 @@ const AddAdjustPage = () => {
 
   const selectedBookingData = (txt) => {
     console.dir(txt);
+    setBooking(txt);
   };
 
   const selectedWhsData = (txt) => {
     console.dir(txt);
+    setWhs(txt);
   };
 
   const selectedCoorData = (txt) => {
     console.dir(txt);
+    setCoor(txt);
   };
 
   const selectedDepartmentData = (txt) => {
     console.dir(txt);
+    setDepartment(txt);
   };
 
   const selectedUnitData = (txt) => {
@@ -386,6 +397,74 @@ const AddAdjustPage = () => {
     // console.dir(doc);
     setIsClearProduct(true);
     setIsClearUnit(true);
+  };
+
+  const SaveData = () => {
+    if (booking === null || booking.length === 0) {
+      return toast({
+        title: "ข้อความแจ้งเตือน",
+        description: "กรุณาระบุเลขที่ Booking ด้วย!",
+        status: "error",
+        duration: 3000,
+        position: "top",
+        isClosable: true,
+      });
+    }
+
+    if (whs === null || whs.length === 0) {
+      return toast({
+        title: "ข้อความแจ้งเตือน",
+        description: "กรุณาระบุคลังสินค้าด้วย!",
+        status: "error",
+        duration: 3000,
+        position: "top",
+        isClosable: true,
+      });
+    }
+
+    if (coor === null || coor.length === 0) {
+      return toast({
+        title: "ข้อความแจ้งเตือน",
+        description: "กรุณาระบุผู้ขายด้วย!",
+        status: "error",
+        duration: 3000,
+        position: "top",
+        isClosable: true,
+      });
+    }
+
+    if (department === null || department.length === 0) {
+      return toast({
+        title: "ข้อความแจ้งเตือน",
+        description: "กรุณาระบุแผนกด้วย!",
+        status: "error",
+        duration: 3000,
+        position: "top",
+        isClosable: true,
+      });
+    }
+
+    if (invNo === null || invNo.length === 0) {
+      return toast({
+        title: "ข้อความแจ้งเตือน",
+        description: "กรุณาระบุเลขที่ Invoice ด้วย!",
+        status: "error",
+        duration: 3000,
+        position: "top",
+        isClosable: true,
+      });
+    }
+
+    if (items === null || items.length === 0) {
+      return toast({
+        title: "ข้อความแจ้งเตือน",
+        description: "กรุณาเพิ่มรายการสินค้าก่อน!",
+        status: "error",
+        duration: 3000,
+        position: "top",
+        isClosable: true,
+      });
+    }
   };
 
   useEffect(() => {
@@ -481,6 +560,8 @@ const AddAdjustPage = () => {
           <div className="flex space-x-4">
             <div className="flex space-x-4">
               <AutoComplete
+                textWidth="w-96"
+                txtLimit={2}
                 label="เล่มเอกสาร"
                 data={bookingData}
                 selectedData={selectedBookingData}
@@ -518,12 +599,16 @@ const AddAdjustPage = () => {
           <div className="flex space-x-4 pt-2">
             <div className="pt-2">เลขที่ INVOCIE:</div>
             <>
-              <Input type="text" />
+              <Input
+                type="text"
+                value={invNo}
+                onChange={(e) => setInvNo(e.target.value)}
+              />
             </>
-            <div className="pt-2">เลขที่ PO:</div>
+            {/* <div className="pt-2">เลขที่ PO:</div>
             <>
               <Input type="text" />
-            </>
+            </> */}
           </div>
         </div>
         <div className="divider" />
@@ -743,6 +828,7 @@ const AddAdjustPage = () => {
                 />
               </svg>
             }
+            onPress={SaveData}
           >
             บันทึกข้อมูล
           </Button>
