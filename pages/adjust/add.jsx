@@ -99,7 +99,7 @@ const AddAdjustPage = () => {
     };
 
     const res = await fetch(
-      `${process.env.API_HOST}/book?name=${name}`,
+      `${process.env.API_HOST}/book?type=AJ&name=${name}`,
       requestOptions
     );
 
@@ -465,6 +465,39 @@ const AddAdjustPage = () => {
         isClosable: true,
       });
     }
+
+    let p = [];
+    items.map((i) => {
+      p.push({
+        product: i.product.id,
+        qty: i.qty,
+        unit: i.unit.id,
+        price: i.price,
+      });
+    });
+
+    let d = Date.now();
+
+    let postData = {
+      prefix: "ADJ",
+      type: "A",
+      step: "I",
+      recdate: `${d.getFullYear()}-${("0" + (d.getMonth() + 1)).slice(-2)}-${(
+        "0" + d.getDate()
+      ).slice(-2)}T00:00:00.000Z`,
+      branch: process.env.BRACH_ID,
+      job: process.env.JOB_ID,
+      corp: process.env.CORP_ID,
+      proj: process.env.PROJ_ID,
+      booking: booking.id,
+      whs: whs.id,
+      coor: coor.id,
+      department: department.id,
+      invoice_no: invNo,
+      items: p,
+    };
+
+    console.dir(postData);
   };
 
   useEffect(() => {
