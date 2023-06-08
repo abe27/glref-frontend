@@ -14,7 +14,7 @@ export const authOptions = {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-        console.dir(credentials);
+        // console.dir(credentials);
         var raw = JSON.stringify({
           username: credentials.username,
           password: credentials.password,
@@ -31,14 +31,14 @@ export const authOptions = {
           redirect: "follow",
         };
 
-        // console.dir(`link:==> ${process.env.API_HOST}/login`);
-
         const res = await fetch(
           `${process.env.API_HOST}/login`,
           requestOptions
         );
-        if (res.status === 200) {
+
+        if (res.ok) {
           const data = await res.json();
+          console.dir(data);
           if (data) {
             return data;
           }
@@ -62,6 +62,7 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       if (account && user) {
+        console.dir(account);
         return {
           ...token,
           userId: user.data.data.fcskid,
