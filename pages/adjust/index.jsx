@@ -5,60 +5,56 @@ import { useState, useEffect } from "react";
 import { useToast } from "@chakra-ui/react";
 import { faker } from "@faker-js/faker";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 const status = [
-  { text: "Adjust", color: "primary", remark: "" },
+  // { text: "Adjust", color: "primary", remark: "" },
   { text: "Transfer", color: "secondary", remark: "" },
   { text: "Success", color: "success", remark: "" },
   { text: "Failed", color: "error", remark: "" },
 ];
 
-const remark = ["เลขที่เอกสารไม่ถูกต้อง", "รายการสินค้าไม่ถูกต้อง"];
-
 const AdjustPage = () => {
+  const { data: session } = useSession();
   const [filterDate, setFilterDate] = useState(null);
   const [data, setData] = useState([]);
   const toast = useToast();
 
   const fetchData = async () => {
     setData([]);
-    const requestOptions = {
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", session?.user.accessToken);
+
+    var requestOptions = {
       method: "GET",
+      headers: myHeaders,
       redirect: "follow",
     };
 
     const res = await fetch(
-      "https://jsonplaceholder.typicode.com/posts",
+      `${process.env.API_HOST}/glHistory`,
       requestOptions
     );
 
     if (res.ok) {
       const data = await res.json();
       let doc = [];
-      data.map((i) => {
-        let refNo = faker.helpers.regexpStyleStringParse("[66000000-66123199]");
-        let d = faker.date.anytime();
+      data.data.map((i) => {
+        let d = new Date(i.fcdate);
         let date = `${d.getFullYear() + 543}-${("0" + (d.getMonth() + 1)).slice(
           -2
         )}-${("0" + d.getDate()).slice(-2)}`;
-        if (filterDate) {
-          date = filterDate;
-        }
 
-        let txt = "";
-        let s = faker.number.int({ min: 0, max: status.length - 1 });
-        if (s === 3) {
-          txt = remark[faker.number.int({ min: 0, max: remark.length - 1 })];
-        }
-
+        let txt = status[i.fcstatus];
         doc.push({
           id: doc.length + 1,
-          fccode: refNo,
-          fcrefno: `ADJ/${refNo}`,
+          fcskid: i.fcskid,
+          fccode: i.fccode,
+          fcrefno: i.fcrefno,
           fcdate: date,
-          fcinvoice: "-",
-          fcstatus: s,
-          fcremark: txt,
+          fcinvoice: i.fcinvoice,
+          fcstatus: txt,
+          fcremark: i.fcremark,
         });
       });
       console.dir(doc);
@@ -82,7 +78,8 @@ const AdjustPage = () => {
   const CheckStatusTotal = (status) => {
     let total = 0;
     data.map((i) => {
-      if (status === i.fcstatus) {
+      console.log(i.fcstatus.text);
+      if (status === i.fcstatus.text) {
         total++;
       }
     });
@@ -90,7 +87,9 @@ const AdjustPage = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    if (session?.user) {
+      fetchData();
+    }
   }, [filterDate]);
 
   return (
@@ -199,13 +198,17 @@ const AdjustPage = () => {
               <Badge color="primary">Total: {data.length}</Badge>
             </span>
             <span>
-              <Badge color="success">Success: {CheckStatusTotal(2)}</Badge>
+              <Badge color="success">
+                Success: {CheckStatusTotal("Success")}
+              </Badge>
             </span>
             <span>
-              <Badge color="secondary">Transfer: {CheckStatusTotal(1)}</Badge>
+              <Badge color="secondary">
+                Transfer: {CheckStatusTotal("Transfer")}
+              </Badge>
             </span>
             <span>
-              <Badge color="error">Failed: {CheckStatusTotal(3)}</Badge>
+              <Badge color="error">Failed: {CheckStatusTotal("Failed")}</Badge>
             </span>
           </div>
           <div className="divider" />
@@ -234,11 +237,9 @@ const AdjustPage = () => {
                     <Table.Cell>
                       <Link
                         href={`/adjust/detail?is_add=false&edit=${
-                          status[i.fcstatus].text === "Transfer"
-                        }&type=${status[i.fcstatus].text}&id=${
-                          i.fccode
-                        }&title=${
-                          status[i.fcstatus].text === "Transfer"
+                          i.fcstatus.text === "Transfer"
+                        }&type=${i.fcstatus.text}&id=${i.fcskid}&title=${
+                          i.fcstatus.text === "Transfer"
                             ? "Transfer ข้อมูล"
                             : "ข้อมูลเพิ่มเติม"
                         }`}
@@ -251,23 +252,21 @@ const AdjustPage = () => {
                     <Table.Cell>
                       <Link
                         href={`/adjust/detail?is_add=false&edit=${
-                          status[i.fcstatus].text === "Transfer"
-                        }&type=${status[i.fcstatus].text}&id=${
-                          i.fccode
-                        }&title=${
-                          status[i.fcstatus].text === "Transfer"
+                          i.fcstatus.text === "Transfer"
+                        }&type=${i.fcstatus.text}&id=${i.fcskid}&title=${
+                          i.fcstatus.text === "Transfer"
                             ? "Transfer ข้อมูล"
                             : "ข้อมูลเพิ่มเติม"
                         }`}
                       >
                         <Button
                           size={"sm"}
-                          color={status[i.fcstatus].color}
+                          color={i.fcstatus.color}
                           auto
-                          flat={status[i.fcstatus].text === "Transfer"}
-                          light={status[i.fcstatus].text !== "Transfer"}
+                          flat={i.fcstatus.text === "Transfer"}
+                          light={i.fcstatus.text !== "Transfer"}
                         >
-                          {status[i.fcstatus].text}
+                          {i.fcstatus.text}
                         </Button>
                       </Link>
                     </Table.Cell>

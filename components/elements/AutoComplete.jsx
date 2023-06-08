@@ -13,7 +13,7 @@ const AutoComplete = ({
   queryData = false,
   isClear = false,
 }) => {
-  const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState(data[0]);
   const [query, setQuery] = useState("");
   const [bgWarning, setBgWarning] = useState("");
 

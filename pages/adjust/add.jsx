@@ -290,22 +290,22 @@ const AddAdjustPage = () => {
   };
 
   const selectedBookingData = (txt) => {
-    console.dir(txt);
+    // console.dir(txt);
     setBooking(txt);
   };
 
   const selectedWhsData = (txt) => {
-    console.dir(txt);
+    // console.dir(txt);
     setWhs(txt);
   };
 
   const selectedCoorData = (txt) => {
-    console.dir(txt);
+    // console.dir(txt);
     setCoor(txt);
   };
 
   const selectedDepartmentData = (txt) => {
-    console.dir(txt);
+    // console.dir(txt);
     setDepartment(txt);
   };
 
@@ -399,7 +399,7 @@ const AddAdjustPage = () => {
     setIsClearUnit(true);
   };
 
-  const SaveData = () => {
+  const SaveData = async () => {
     if (booking === null || booking.length === 0) {
       return toast({
         title: "ข้อความแจ้งเตือน",
@@ -470,13 +470,13 @@ const AddAdjustPage = () => {
     items.map((i) => {
       p.push({
         product: i.product.id,
-        qty: i.qty,
+        qty: parseFloat(i.qty),
         unit: i.unit.id,
-        price: i.price,
+        price: parseFloat(i.price),
       });
     });
 
-    let d = Date.now();
+    let d = new Date();
 
     let postData = {
       prefix: "ADJ",
@@ -497,7 +497,44 @@ const AddAdjustPage = () => {
       items: p,
     };
 
-    console.dir(postData);
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Authorization", session?.user.accessToken);
+
+    var raw = JSON.stringify(postData);
+
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+
+    const res = await fetch(`${process.env.API_HOST}/glref`, requestOptions);
+    if (res.ok) {
+      // const data = await res.json();
+      toast({
+        title: "ข้อความแจ้งเตือน",
+        description: "บันทึกข้อมูลเรียบร้อยแล้ว",
+        status: "success",
+        duration: 3000,
+        position: "top",
+        isClosable: true,
+      });
+      return router.push("/adjust");
+    }
+
+    if (!res.ok) {
+      console.dir(res);
+      return toast({
+        title: "ข้อความแจ้งเตือน",
+        description: res.statusText,
+        status: "error",
+        duration: 3000,
+        position: "top",
+        isClosable: true,
+      });
+    }
   };
 
   useEffect(() => {
