@@ -314,6 +314,7 @@ const AddAdjustDetailPage = () => {
             <div className="pt-2">เลขที่ PO:</div>
             <div className="w-52">
               <Input
+                readOnly={type !== "Transfer"}
                 fullWidth
                 type="text"
                 value={poNo}
