@@ -572,7 +572,7 @@ const AddAdjustPage = () => {
       <dialog id="my_modal_1" className="modal">
         <form method="dialog" className="modal-box">
           <button
-            for="my-modal-3"
+            htmlFor="my-modal-3"
             className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
           >
             ✕
