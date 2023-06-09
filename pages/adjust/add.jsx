@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { AutoComplete, MainLayOut } from "@/components";
+import { AutoComplete, AutoCompleteUnit, MainLayOut } from "@/components";
 import { useToast } from "@chakra-ui/react";
 import { Button, Input, Table } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
@@ -21,17 +21,19 @@ const AddAdjustPage = () => {
   const [departmentData, setDepartmentData] = useState([]);
   const [unitData, setUnitData] = useState([]);
   const [productData, setProductData] = useState([]);
+  const [txtFilterUnit, setTxtFilterUnit] = useState(null);
 
   /// Action
   const [items, setItems] = useState([]);
   const [vatQty, setVatQty] = useState(7);
+  const [vatCost, setVatCost] = useState(0);
   const [sumCost, setSumCost] = useState(0);
   const [sumVat, setSumVat] = useState(0);
   const [isClearProduct, setIsClearProduct] = useState(false);
   const [isClearUnit, setIsClearUnit] = useState(false);
   const [selectProduct, setSelectProduct] = useState([]);
   const [selectQty, setSelectQty] = useState(0);
-  const [selectUnit, setSelectUnit] = useState([]);
+  const [selectUnit, setSelectUnit] = useState(null);
   const [selectPrice, setSelectPrice] = useState(0);
 
   /// Btn Add Data
@@ -68,6 +70,7 @@ const AddAdjustPage = () => {
         setSumCost(cost);
 
         let v = (vatQty / 100) * cost;
+        setVatCost(parseFloat(v).toFixed(2));
         setSumVat(v + cost);
         setItems(doc);
         return MySwal.fire({
@@ -99,7 +102,7 @@ const AddAdjustPage = () => {
     };
 
     const res = await fetch(
-      `${process.env.API_HOST}/book?type=AJ&name=${name}`,
+      `${process.env.API_HOST}/book?type=AJ`,
       requestOptions
     );
 
@@ -131,8 +134,9 @@ const AddAdjustPage = () => {
       redirect: "follow",
     };
 
+    // console.dir(`${process.env.API_HOST}/whs?type=${name}`);
     const res = await fetch(
-      `${process.env.API_HOST}/whs?name=${name}`,
+      `${process.env.API_HOST}/whs?type=${name}`,
       requestOptions
     );
 
@@ -164,10 +168,7 @@ const AddAdjustPage = () => {
       redirect: "follow",
     };
 
-    const res = await fetch(
-      `${process.env.API_HOST}/coor?name=${name}`,
-      requestOptions
-    );
+    const res = await fetch(`${process.env.API_HOST}/coor`, requestOptions);
 
     if (res.ok) {
       let doc = [];
@@ -231,16 +232,18 @@ const AddAdjustPage = () => {
       redirect: "follow",
     };
 
-    const res = await fetch(
-      `${process.env.API_HOST}/unit?name=${name}`,
-      requestOptions
-    );
+    // if (name === null || name === undefined) {
+    //   name = "PCS";
+    // }
+
+    const res = await fetch(`${process.env.API_HOST}/unit`, requestOptions);
 
     if (res.ok) {
       let doc = [];
       const data = await res.json();
       data.data.map((i) => {
         doc.push({
+          rnn: doc.length,
           id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
           code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
           name: `${i.fccode.replace(/^\s+|\s+$/gm, "")}-${i.fcname.replace(
@@ -255,7 +258,9 @@ const AddAdjustPage = () => {
   };
 
   const fetchProduct = async (name) => {
+    // setTxtFilterUnit(null);
     setIsClearProduct(false);
+    setIsClearUnit(false);
     setProductData([]);
     var myHeaders = new Headers();
     myHeaders.append("Authorization", session?.user.accessToken);
@@ -275,6 +280,17 @@ const AddAdjustPage = () => {
       let doc = [];
       const data = await res.json();
       data.data.map((i) => {
+        let x = i.unit;
+        let u = {
+          id: x.fcskid.replace(/^\s+|\s+$/gm, ""),
+          code: `${x.fccode.replace(/^\s+|\s+$/gm, "")}`,
+          name: `${x.fccode.replace(/^\s+|\s+$/gm, "")}-${x.fcname.replace(
+            /^\s+|\s+$/gm,
+            ""
+          )}`,
+          description: `${x.fcname.replace(/^\s+|\s+$/gm, "")}`,
+        };
+
         doc.push({
           id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
           code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
@@ -283,6 +299,7 @@ const AddAdjustPage = () => {
             ""
           )}`,
           description: `${i.fcname.replace(/^\s+|\s+$/gm, "")}`,
+          unit: u,
         });
       });
       setProductData(doc);
@@ -291,35 +308,44 @@ const AddAdjustPage = () => {
 
   const selectedBookingData = (txt) => {
     // console.dir(txt);
-    setBooking(txt);
+    if (txt) setBooking(txt);
   };
 
   const selectedWhsData = (txt) => {
     // console.dir(txt);
-    setWhs(txt);
+    if (txt) setWhs(txt);
   };
 
   const selectedCoorData = (txt) => {
     // console.dir(txt);
-    setCoor(txt);
+    if (txt) setCoor(txt);
   };
 
   const selectedDepartmentData = (txt) => {
     // console.dir(txt);
-    setDepartment(txt);
+    if (txt) setDepartment(txt);
   };
 
   const selectedUnitData = (txt) => {
-    setSelectUnit(txt);
+    if (txt) {
+      console.dir(txt);
+      setSelectUnit(txt);
+    }
   };
 
   const selectedProductData = (txt) => {
-    // setIsClearProduct(false);
-    setSelectProduct(txt);
+    if (txt) {
+      setIsClearUnit(false);
+      setSelectProduct(txt);
+      if (txt.unit !== undefined) {
+        // let a = unitData.filter((x) => x.id === txt.unit.id);
+        setTxtFilterUnit(txt.unit.id);
+      }
+    }
   };
 
   const AddItem = () => {
-    if (selectProduct === null || selectProduct.length === 0) {
+    if (selectProduct === undefined || selectProduct.length === 0) {
       return toast({
         title: "ข้อความแจ้งเตือน",
         description: "กรุณาระบุสินค้าด้วย",
@@ -551,16 +577,18 @@ const AddAdjustPage = () => {
     });
     setSumCost(cost);
     let v = (vatQty / 100) * cost;
+    setVatCost(parseFloat(v).toFixed(2));
     setSumVat(v + cost);
   }, [isClearProduct]);
 
   useEffect(() => {
     if (session?.user) {
-      fetchBooking();
-      fetchWhs();
-      fetchCoor();
-      fetchDepartment();
-      fetchUnit();
+      // setTxtFilterUnit(null);
+      fetchBooking(null);
+      fetchWhs("003,005");
+      fetchCoor(null);
+      fetchDepartment(null);
+      fetchUnit(null);
       fetchProduct(null);
     }
   }, [session]);
@@ -689,6 +717,7 @@ const AddAdjustPage = () => {
                 fullName={false}
                 label="รหัสสินค้า"
                 textWidth="w-fit"
+                ulWidth="w-96"
                 data={productData}
                 selectedData={selectedProductData}
                 queryData={(name) => fetchProduct(name)}
@@ -706,18 +735,19 @@ const AddAdjustPage = () => {
               </>
             </div>
             <div className="pt-2">
-              <AutoComplete
+              <AutoCompleteUnit
+                name="unit"
                 txtLimit={2}
                 label=""
                 textWidth="w-28"
                 data={unitData}
                 selectedData={selectedUnitData}
-                queryData={(name) => fetchUnit(name)}
                 isClear={isClearUnit}
+                filterTxt={txtFilterUnit}
               />
             </div>
             <div className="flex space-x-4 pt-2">
-              <div className="pt-2">ราคา:</div>
+              <div className="pt-2">ราคา/หน่วย:</div>
               <>
                 <Input
                   type="number"
@@ -865,9 +895,13 @@ const AddAdjustPage = () => {
         </div>
         <div className="flex justify-end space-x-4">
           <div className="flex space-x-4 pt-2">
-            <div className="pt-2">มูลค่าVAT:</div>
+            <div className="pt-2">มูลค่า VAT ${vatQty}%:</div>
             <>
-              <Input readOnly type="text" value={`${vatQty}%`} />
+              <Input
+                readOnly
+                type="text"
+                value={`${vatCost.toLocaleString()}`}
+              />
             </>
           </div>
         </div>

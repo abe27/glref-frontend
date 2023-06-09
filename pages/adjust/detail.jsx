@@ -22,6 +22,7 @@ const AddAdjustDetailPage = () => {
   // Form data
   const [sumCost, setSumCost] = useState(0);
   const [vatQty, setVatQty] = useState(7);
+  const [vatCost, setVatCost] = useState(0);
   const [sumVat, setSumVat] = useState(0);
   const [poNo, setPoNo] = useState(null);
 
@@ -72,6 +73,7 @@ const AddAdjustDetailPage = () => {
       setSumCost(cost);
 
       let v = (vatQty / 100) * cost;
+      setVatCost(parseFloat(v).toFixed(2));
       setSumVat(v + cost);
       setItems(data.data);
     }
@@ -154,9 +156,10 @@ const AddAdjustDetailPage = () => {
     }
 
     if (!res.ok) {
+      const data = await res.json();
       MySwal.fire({
         title: "เกิดข้อผิดพลาด!",
-        text: res.statusText,
+        text: data.message,
         icon: "error",
         confirmButtonColor: "#3085d6",
         confirmButtonText: "ตกลง",
@@ -437,9 +440,9 @@ const AddAdjustDetailPage = () => {
         </div>
         <div className="flex justify-end space-x-4">
           <div className="flex space-x-4 pt-2">
-            <div className="pt-2">มูลค่าVAT:</div>
+            <div className="pt-2">มูลค่าVAT 7%:</div>
             <>
-              <Input readOnly type="text" value={`${vatQty}%`} />
+              <Input readOnly type="text" value={`${vatCost}`} />
             </>
           </div>
         </div>

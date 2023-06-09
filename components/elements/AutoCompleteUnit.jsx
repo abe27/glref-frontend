@@ -3,10 +3,7 @@ import { Combobox, Transition } from "@headlessui/react";
 import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { Fragment, useEffect, useState } from "react";
 
-const AutoComplete = ({
-  name = "-",
-  txtLimit = 2,
-  fullName = true,
+const AutoCompleteUnit = ({
   label = "",
   textWidth = "w-full",
   ulWidth = "w-full",
@@ -30,14 +27,31 @@ const AutoComplete = ({
             .includes(query.toLowerCase().replace(/\s+/g, ""))
         );
 
+  const checkClear = (obj) => {
+    if (!isClear) {
+      return obj.description;
+    }
+    return "";
+  };
+
   useEffect(() => {
     selectedData(selected);
   }, [selected]);
 
   useEffect(() => {
-    // console.log(`AutoComplete ::=> ${query}`);
-    if (query.length > txtLimit) queryData(query);
+    if (query.length > 0) queryData(query);
   }, [query]);
+
+  useEffect(() => {
+    if (isClear) {
+      setSelected(data[0]);
+    } else {
+      let a = data.filter((x) => x.id === filterTxt);
+      if (a.length > 0) {
+        setSelected(data[a[0].rnn]);
+      }
+    }
+  }, [isClear, filterTxt]);
 
   return (
     <>
@@ -48,16 +62,7 @@ const AutoComplete = ({
             <div className="relative w-full cursor-default overflow-hidden rounded-lg shadow text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
               <Combobox.Input
                 className={`border-none ${textWidth} py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0 ${bgWarning}`}
-                displayValue={(obj) => {
-                  if (isClear) {
-                    return "";
-                  }
-
-                  if (fullName) {
-                    return obj.name;
-                  }
-                  return obj.code;
-                }}
+                displayValue={(obj) => checkClear(obj)}
                 onChange={(event) => setQuery(event.target.value)}
               />
               <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
@@ -115,4 +120,4 @@ const AutoComplete = ({
   );
 };
 
-export default AutoComplete;
+export default AutoCompleteUnit;
