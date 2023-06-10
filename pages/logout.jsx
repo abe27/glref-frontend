@@ -9,10 +9,7 @@ const LogOutPage = () => {
 
   useEffect(() => {
     if (countDown <= 0) {
-      signOut({
-        callbackUrl: `${router.push("/login")}`,
-      });
-      // router.push("/login");
+      signOut();
     }
 
     const timer = setTimeout(() => {
@@ -42,14 +39,7 @@ const LogOutPage = () => {
             <p className="mb-8 text-center text-gray-500 md:text-lg">
               กำลังออกจากระบบ
             </p>
-            <span
-              role={"button"}
-              onClick={() =>
-                signOut({
-                  callbackUrl: `${router.push("/login")}`,
-                })
-              }
-            >
+            <span role={"button"} onClick={() => signOut()}>
               <span className="px-6 py-2 text-sm font-semibold bg-blue-100">
                 <span className="text-blue-800">Login</span>(
                 <span className="text-rose-800">{countDown}</span>)

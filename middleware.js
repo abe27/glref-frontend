@@ -11,7 +11,14 @@ const middleware = async (req) => {
 };
 
 export const config = {
-  matcher: ["/", "/adjust", "/adjust/:path*", "/report", "/report/:path*"],
+  matcher: [
+    "/",
+    "/logout",
+    "/adjust",
+    "/adjust/:path*",
+    "/report",
+    "/report/:path*",
+  ],
 };
 
 export default middleware;
