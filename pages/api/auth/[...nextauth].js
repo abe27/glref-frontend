@@ -38,7 +38,6 @@ export const authOptions = {
 
         if (res.ok) {
           const data = await res.json();
-          console.dir(data);
           if (data) {
             return data;
           }
@@ -62,7 +61,6 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       if (account && user) {
-        console.dir(account);
         return {
           ...token,
           userId: user.data.data.fcskid,
