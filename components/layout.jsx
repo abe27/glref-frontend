@@ -13,7 +13,7 @@ const MainLayOut = ({
 }) => {
   const router = useRouter();
   const { data: session } = useSession();
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
 
   const checkToken = async () => {
     var myHeaders = new Headers();
@@ -32,13 +32,13 @@ const MainLayOut = ({
     }
 
     if (!res.ok) {
-      setIsLogin(true);
       router.push("/login");
       return;
     }
   };
 
   useEffect(() => {
+    setIsLogin(true);
     if (session?.user) {
       checkToken();
     }
@@ -49,7 +49,15 @@ const MainLayOut = ({
         <title>{title}</title>
         <meta property="og:title" content={description} key="title" />
       </Head>
-      {isLogin ? (
+      {session?.user ? (
+        <div className="absolute bg-gray-200 w-full h-full">
+          <NavBar />
+          <div className="flex">
+            <AsideBar />
+            <div className="container h-full p-6">{children}</div>
+          </div>
+        </div>
+      ) : (
         <div className="flex flex-col h-screen justify-center items-center">
           <Spinner
             thickness="4px"
@@ -58,14 +66,6 @@ const MainLayOut = ({
             color="blue.500"
             size="xl"
           />
-        </div>
-      ) : (
-        <div className="absolute bg-gray-200 w-full h-full">
-          <NavBar />
-          <div className="flex">
-            <AsideBar />
-            <div className="container h-full p-6">{children}</div>
-          </div>
         </div>
       )}
     </>

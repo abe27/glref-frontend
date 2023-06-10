@@ -92,6 +92,12 @@ const AdjustPage = () => {
     }
   }, [filterDate]);
 
+  useEffect(() => {
+    if (session?.user) {
+      fetchData();
+    }
+  }, []);
+
   return (
     <MainLayOut
       title="ใบรับสินค้าชั่วคราว"

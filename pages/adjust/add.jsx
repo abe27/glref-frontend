@@ -43,6 +43,9 @@ const AddAdjustPage = () => {
   const [department, setDepartment] = useState([]);
   const [invNo, setInvNo] = useState(null);
 
+  const [editData, setEditData] = useState(null);
+  const [editQty, setEditQty] = useState(0);
+
   const ConfirmDelete = (obj) => {
     MySwal.fire({
       title: "ยืนยันคำสั่ง!",
@@ -563,13 +566,7 @@ const AddAdjustPage = () => {
     }
   };
 
-  useEffect(() => {
-    if (isClearProduct) {
-      setSelectProduct(null);
-      setSelectQty(0);
-      setSelectUnit(null);
-      setSelectPrice(0);
-    }
+  const UpdateVat = () => {
     let cost = 0;
     items.map((i) => {
       let a = parseFloat(i.price) * parseFloat(i.qty);
@@ -579,6 +576,31 @@ const AddAdjustPage = () => {
     let v = (vatQty / 100) * cost;
     setVatCost(parseFloat(v).toFixed(2));
     setSumVat(v + cost);
+  };
+
+  const UpdateProduct = () => {
+    console.dir(editData);
+    setItems((prev) => {
+      let item = [...prev];
+      item.map((i) => {
+        if (i.product.code === editData?.product.code) {
+          i.qty = editData?.qty;
+          i.price = editData?.price;
+        }
+      });
+      return item;
+    });
+    UpdateVat();
+  };
+
+  useEffect(() => {
+    if (isClearProduct) {
+      setSelectProduct(null);
+      setSelectQty(0);
+      setSelectUnit(null);
+      setSelectPrice(0);
+    }
+    UpdateVat();
   }, [isClearProduct]);
 
   useEffect(() => {
@@ -609,36 +631,80 @@ const AddAdjustPage = () => {
           <div className="py-4">
             <div className="pt-2">
               <>
-                <Input label="รหัสสินค้า" fullWidth type="text" />
+                <Input
+                  label="รหัสสินค้า"
+                  readOnly
+                  fullWidth
+                  type="text"
+                  value={editData?.product.code}
+                />
               </>
               <div className="pt-2">
-                <Input label="ชื่อสินค้า" fullWidth type="text" />
+                <Input
+                  label="ชื่อสินค้า"
+                  readOnly
+                  fullWidth
+                  type="text"
+                  value={editData?.product.description}
+                />
               </div>
             </div>
             <div className="flex space-x-4">
-              <div className="flex space-x-4 pt-2">
-                <div className="pt-2">จำนวน:</div>
-                <>
-                  <Input type="number" />
-                </>
+              <div className="pt-2">
+                <Input
+                  label="จำนวน"
+                  fullWidth
+                  type="number"
+                  value={editData?.qty}
+                  onChange={(e) =>
+                    setEditData((prevState) => {
+                      const newItems = { ...prevState };
+                      newItems.qty = e.target.value;
+                      return newItems;
+                    })
+                  }
+                />
               </div>
               <div className="pt-2">
-                <AutoComplete
+                <Input
+                  label="ราคา/หน่วย"
+                  fullWidth
+                  type="number"
+                  value={editData?.price}
+                  onChange={(e) =>
+                    setEditData((prevState) => {
+                      const newItems = { ...prevState };
+                      newItems.price = e.target.value;
+                      return newItems;
+                    })
+                  }
+                />
+              </div>
+              <div className="flex pt-9">
+                <AutoCompleteUnit
+                  name="unit"
+                  txtLimit={2}
                   label=""
+                  textWidth="w-28"
                   data={unitData}
-                  selectedData={selectedUnitData}
-                  queryData={(name) => fetchUnit(name)}
+                  selectedData={(obj) => console.dir(obj)}
+                  isClear={false}
+                  filterTxt={editData?.unit.id}
                 />
               </div>
             </div>
           </div>
           <div className="modal-action">
-            <Button auto color={"primary"}>
+            <button
+              onClick={UpdateProduct}
+              className="btn btn-success"
+              htmlFor="my-modal-3"
+            >
               บันทึก
-            </Button>
-            <Button auto color={"error"}>
+            </button>
+            <button className="btn btn-error" htmlFor="my-modal-3">
               ปิด
-            </Button>
+            </button>
           </div>
         </form>
       </dialog>
@@ -835,7 +901,12 @@ const AddAdjustPage = () => {
                             />
                           </svg>
                         }
-                        onPress={() => window.my_modal_1.showModal()}
+                        onPress={() => {
+                          console.dir(i);
+                          setEditData(i);
+                          setEditQty(i.qty);
+                          window.my_modal_1.showModal();
+                        }}
                       >
                         แก้ไข
                       </Button>
