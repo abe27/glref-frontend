@@ -2,8 +2,8 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 // import https from "https";
 
-// console.log(process.env.JWT_SECRET)
-// console.log(process.env.API_HOST)
+// console.log(process.env.JWT_SECRET);
+// console.log(process.env.API_HOST);
 
 export const authOptions = {
   providers: [
@@ -14,16 +14,12 @@ export const authOptions = {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-        // console.dir(credentials);
         var raw = JSON.stringify({
           username: credentials.username,
           password: credentials.password,
         });
 
-        // const urlencoded = new URLSearchParams();
-        // urlencoded.append("username", credentials.username);
-        // urlencoded.append("password", credentials.password);
-
+        // console.log(`${process.env.API_HOST}/login`);
         var requestOptions = {
           method: "POST",
           headers: myHeaders,

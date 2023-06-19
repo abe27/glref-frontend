@@ -106,10 +106,10 @@ const NavBar = () => {
               >
                 {profile ? (
                   <ul
-                    className="p-2 w-40 border-r bg-white absolute rounded z-50 right-0 shadow mt-72"
+                    className="p-2 w-full border-r bg-white absolute rounded z-50 shadow mt-20"
                     onMouseLeave={() => setProfile(false)}
                   >
-                    <li className="cursor-pointer text-gray-600 text-sm leading-3 tracking-normal py-2 hover:text-indigo-700 focus:text-indigo-700 focus:outline-none">
+                    {/* <li className="cursor-pointer text-gray-600 text-sm leading-3 tracking-normal py-2 hover:text-indigo-700 focus:text-indigo-700 focus:outline-none">
                       <div className="flex items-center">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -168,7 +168,7 @@ const NavBar = () => {
                         <circle cx={12} cy={12} r={3} />
                       </svg>
                       <span className="ml-2">Account Settings</span>
-                    </li>
+                    </li> */}
                     <li
                       className="cursor-pointer text-gray-600 text-sm leading-3 tracking-normal mt-2 py-2 hover:text-indigo-700 flex items-center focus:text-indigo-700 focus:outline-none"
                       onClick={() => router.push("/logout")}
@@ -266,7 +266,7 @@ const NavBar = () => {
                 <span className="ml-2">Dashboard</span>
               </div>
             </li>
-            <li className="flex xl:hidden  cursor-pointer text-gray-600 text-sm leading-3 tracking-normal mt-2 py-2 hover:text-indigo-700 focus:text-indigo-700 focus:outline-none flex items-center relative">
+            <li className="flex xl:hidden  cursor-pointer text-gray-600 text-sm leading-3 tracking-normal mt-2 py-2 hover:text-indigo-700 focus:text-indigo-700 focus:outline-none items-center relative">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="icon icon-tabler icon-tabler-help"
@@ -286,7 +286,7 @@ const NavBar = () => {
               </svg>
               <span className="ml-2">Products</span>
             </li>
-            <li className="flex xl:hidden cursor-pointer text-gray-600 text-sm leading-3 tracking-normal mt-2 py-2 hover:text-indigo-700 flex items-center focus:text-indigo-700 focus:outline-none">
+            <li className="flex xl:hidden cursor-pointer text-gray-600 text-sm leading-3 tracking-normal mt-2 py-2 hover:text-indigo-700 items-center focus:text-indigo-700 focus:outline-none">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="icon icon-tabler icon-tabler-settings"
