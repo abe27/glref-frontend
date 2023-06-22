@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState, useRef } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import * as XLSX from "xlsx";
 const MySwal = withReactContent(Swal);
 
 const AddAdjustPage = () => {
@@ -30,7 +31,6 @@ const AddAdjustPage = () => {
 
   /// Action
   const [items, setItems] = useState([]);
-  const [isClearProduct, setIsClearProduct] = useState(false);
 
   /// Btn Add Data
   const [booking, setBooking] = useState([]);
@@ -43,6 +43,7 @@ const AddAdjustPage = () => {
   const [editData, setEditData] = useState(null);
   const [editFromWhs, setEditFromWhs] = useState(null);
   const [editToWhs, setEditToWhs] = useState(null);
+  const [editQty, setEditQty] = useState(0);
 
   const ConfirmDelete = (obj) => {
     MySwal.fire({
@@ -103,7 +104,7 @@ const AddAdjustPage = () => {
     };
 
     const res = await fetch(
-      `${process.env.API_HOST}/book?type=AJ`,
+      `${process.env.API_HOST}/book?type=FR`,
       requestOptions
     );
 
@@ -291,7 +292,48 @@ const AddAdjustPage = () => {
 
   const AddItem = (e) => {
     e.preventDefault();
+    setItems([]);
+    let docs = [];
     setExcelName(e.target.files[0].name);
+    var files = e.target.files,
+      f = files[0];
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var data = e.target.result;
+      let readedData = XLSX.read(data, { type: "binary" });
+      const wsname = readedData.SheetNames[0];
+      const ws = readedData.Sheets[wsname];
+
+      /* Convert array to json*/
+      const dataParse = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      let r = 0;
+      dataParse.map((i) => {
+        if (r > 0) {
+          let isDuplicate = true;
+          if (docs.length > 0) {
+            let doc = docs.filter(
+              (a) => a.code === i[0].replace(/^\s+|\s+$/gm, "")
+            );
+
+            if (doc.length > 0) {
+              isDuplicate = false;
+            }
+          }
+
+          if (isDuplicate) {
+            docs.push({
+              code: i[0].replace(/^\s+|\s+$/gm, ""),
+              description: i[1].replace(/^\s+|\s+$/gm, ""),
+              qty: i[2],
+              unit: i[3].replace(/^\s+|\s+$/gm, ""),
+            });
+          }
+        }
+        r++;
+      });
+      setItems(docs);
+    };
+    reader.readAsBinaryString(f);
   };
 
   const UploadExcel = (e) => inputExcel.current.click();
@@ -377,10 +419,9 @@ const AddAdjustPage = () => {
     let p = [];
     items.map((i) => {
       p.push({
-        product: i.product.id,
+        product: i.code,
         qty: parseFloat(i.qty),
-        unit: i.unit.id,
-        price: parseFloat(i.price),
+        unit: "",
       });
     });
 
@@ -388,7 +429,7 @@ const AddAdjustPage = () => {
 
     let postData = {
       prefix: "PVF1",
-      type: "A",
+      type: "G",
       step: "I",
       recdate: `${d.getFullYear()}-${("0" + (d.getMonth() + 1)).slice(-2)}-${(
         "0" + d.getDate()
@@ -430,7 +471,7 @@ const AddAdjustPage = () => {
         position: "top",
         isClosable: true,
       });
-      return router.push("/adjust");
+      return router.push("/pvf1");
     }
 
     if (!res.ok) {
@@ -451,9 +492,8 @@ const AddAdjustPage = () => {
     setItems((prev) => {
       let item = [...prev];
       item.map((i) => {
-        if (i.product.code === editData?.product.code) {
+        if (i.code === editData?.code) {
           i.qty = editData?.qty;
-          i.price = editData?.price;
         }
       });
       return item;
@@ -466,7 +506,7 @@ const AddAdjustPage = () => {
       fetchWhs("YYY,003");
       fetchCoor(null);
       fetchDepartment(null);
-      fetchUnit();
+      // fetchUnit();
     }
   }, [session]);
 
@@ -491,7 +531,7 @@ const AddAdjustPage = () => {
                   readOnly
                   fullWidth
                   type="text"
-                  value={editData?.product.code}
+                  value={editData?.code}
                 />
               </>
               <div className="pt-2">
@@ -500,7 +540,7 @@ const AddAdjustPage = () => {
                   readOnly
                   fullWidth
                   type="text"
-                  value={editData?.product.description}
+                  value={editData?.description}
                 />
               </div>
             </div>
@@ -520,31 +560,13 @@ const AddAdjustPage = () => {
                   }
                 />
               </div>
-              <div className="pt-2">
-                <Input
-                  label="ราคา/หน่วย"
-                  fullWidth
-                  type="number"
-                  value={editData?.price}
-                  onChange={(e) =>
-                    setEditData((prevState) => {
-                      const newItems = { ...prevState };
-                      newItems.price = e.target.value;
-                      return newItems;
-                    })
-                  }
-                />
-              </div>
               <div className="flex pt-9">
-                <AutoCompleteUnit
-                  name="unit"
-                  txtLimit={2}
+                <Input
                   label=""
-                  textWidth="w-28"
-                  data={unitData}
-                  selectedData={(obj) => console.dir(obj)}
-                  isClear={false}
-                  filterTxt={editData?.unit.id}
+                  readOnly
+                  fullWidth
+                  type="text"
+                  value={editData?.unit}
                 />
               </div>
             </div>
@@ -694,10 +716,10 @@ const AddAdjustPage = () => {
               {items.map((i, x) => (
                 <Table.Row key={x}>
                   <Table.Cell>{x + 1}</Table.Cell>
-                  <Table.Cell>{i.product.code}</Table.Cell>
-                  <Table.Cell>{i.product.description}</Table.Cell>
+                  <Table.Cell>{i.code}</Table.Cell>
+                  <Table.Cell>{i.description}</Table.Cell>
                   <Table.Cell>{parseInt(i.qty).toLocaleString()}</Table.Cell>
-                  <Table.Cell>{i.unit.description}</Table.Cell>
+                  <Table.Cell>{i.unit}</Table.Cell>
                   <Table.Cell>
                     <div className="flex space-x-2 justify-end w-full">
                       <Button
