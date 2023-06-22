@@ -31,7 +31,7 @@ const AdjustPage = () => {
     };
 
     const res = await fetch(
-      `${process.env.API_HOST}/glHistory?fctype=ADJ`,
+      `${process.env.API_HOST}/glHistory?fctype=PVF1`,
       requestOptions
     );
 
@@ -99,8 +99,8 @@ const AdjustPage = () => {
 
   return (
     <MainLayOut
-      title="ใบรับสินค้าชั่วคราว"
-      description="รายการใบรับสินค้าชั่วคราว"
+      title="ใบรับสินค้า PVF1"
+      description="รายการใบรับสินค้าประเภท PVF1"
     >
       <>
         <div className="grid-cols-1 container">
@@ -144,7 +144,7 @@ const AdjustPage = () => {
             <div className="flex justify-end">
               <div className="flex justify-between space-x-4">
                 <Tooltip content="เพิ่มรายการรับสินค้าใหม่">
-                  <Link href={`/adjust/add?title=เพิ่มรายการรับสินค้า`}>
+                  <Link href={`/pvf1/add?title=เพิ่มรายการรับสินค้า`}>
                     <Button
                       size={"md"}
                       auto

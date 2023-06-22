@@ -26,7 +26,6 @@ const MainLayOut = ({
     };
 
     const res = await fetch(`${process.env.API_HOST}/verify`, requestOptions);
-    console.dir(res);
     if (res.ok) {
       setIsLogin(false);
       return;

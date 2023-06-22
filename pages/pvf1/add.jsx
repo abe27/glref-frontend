@@ -1,16 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { AutoComplete, AutoCompleteUnit, MainLayOut } from "@/components";
+import {
+  AutoComplete,
+  AutoCompleteUnit,
+  MainLayOut,
+  AutoCompleteWhs,
+} from "@/components";
 import { useToast } from "@chakra-ui/react";
-import { Button, Input, Table } from "@nextui-org/react";
+import { Button, Input, Table, Textarea } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 const MySwal = withReactContent(Swal);
 
 const AddAdjustPage = () => {
+  const inputExcel = useRef();
   const toast = useToast();
   const { data: session } = useSession();
   const router = useRouter();
@@ -20,31 +26,23 @@ const AddAdjustPage = () => {
   const [coorData, setCoorData] = useState([]);
   const [departmentData, setDepartmentData] = useState([]);
   const [unitData, setUnitData] = useState([]);
-  const [productData, setProductData] = useState([]);
-  const [txtFilterUnit, setTxtFilterUnit] = useState(null);
+  const [excelName, setExcelName] = useState(null);
 
   /// Action
   const [items, setItems] = useState([]);
-  const [vatQty, setVatQty] = useState(7);
-  const [vatCost, setVatCost] = useState(0);
-  const [sumCost, setSumCost] = useState(0);
-  const [sumVat, setSumVat] = useState(0);
   const [isClearProduct, setIsClearProduct] = useState(false);
-  const [isClearUnit, setIsClearUnit] = useState(false);
-  const [selectProduct, setSelectProduct] = useState([]);
-  const [selectQty, setSelectQty] = useState(0);
-  const [selectUnit, setSelectUnit] = useState(null);
-  const [selectPrice, setSelectPrice] = useState(0);
 
   /// Btn Add Data
   const [booking, setBooking] = useState([]);
-  const [whs, setWhs] = useState([]);
+  const [fromWhs, setFromWhs] = useState([]);
+  const [toWhs, setToWhs] = useState([]);
   const [coor, setCoor] = useState([]);
   const [department, setDepartment] = useState([]);
-  const [invNo, setInvNo] = useState(null);
+  const [invNo, setInvNo] = useState("");
 
   const [editData, setEditData] = useState(null);
-  const [editQty, setEditQty] = useState(0);
+  const [editFromWhs, setEditFromWhs] = useState(null);
+  const [editToWhs, setEditToWhs] = useState(null);
 
   const ConfirmDelete = (obj) => {
     MySwal.fire({
@@ -127,6 +125,8 @@ const AddAdjustPage = () => {
   };
 
   const fetchWhs = async (name) => {
+    setEditFromWhs(null);
+    setEditToWhs(null);
     setWhsData([]);
     var myHeaders = new Headers();
     myHeaders.append("Authorization", session?.user.accessToken);
@@ -148,6 +148,7 @@ const AddAdjustPage = () => {
       const data = await res.json();
       data.data.map((i) => {
         doc.push({
+          rnn: doc.length,
           id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
           code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
           name: `${i.fccode.replace(/^\s+|\s+$/gm, "")}-${i.fcname.replace(
@@ -157,6 +158,10 @@ const AddAdjustPage = () => {
         });
       });
       setWhsData(doc);
+      let frm = doc.filter((i) => i.code === "YYY");
+      setEditFromWhs(frm[0]);
+      let toWhs = doc.filter((i) => i.code === "003");
+      setEditToWhs(toWhs[0]);
     }
   };
 
@@ -224,7 +229,6 @@ const AddAdjustPage = () => {
   };
 
   const fetchUnit = async (name) => {
-    setIsClearUnit(false);
     setUnitData([]);
     var myHeaders = new Headers();
     myHeaders.append("Authorization", session?.user.accessToken);
@@ -260,63 +264,19 @@ const AddAdjustPage = () => {
     }
   };
 
-  const fetchProduct = async (name) => {
-    // setTxtFilterUnit(null);
-    setIsClearProduct(false);
-    setIsClearUnit(false);
-    setProductData([]);
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", session?.user.accessToken);
-
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-
-    const res = await fetch(
-      `${process.env.API_HOST}/product?type=1,5&name=${name}`,
-      requestOptions
-    );
-
-    if (res.ok) {
-      let doc = [];
-      const data = await res.json();
-      data.data.map((i) => {
-        let x = i.unit;
-        let u = {
-          id: x.fcskid.replace(/^\s+|\s+$/gm, ""),
-          code: `${x.fccode.replace(/^\s+|\s+$/gm, "")}`,
-          name: `${x.fccode.replace(/^\s+|\s+$/gm, "")}-${x.fcname.replace(
-            /^\s+|\s+$/gm,
-            ""
-          )}`,
-          description: `${x.fcname.replace(/^\s+|\s+$/gm, "")}`,
-        };
-
-        doc.push({
-          id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
-          code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
-          name: `${i.fccode.replace(/^\s+|\s+$/gm, "")}-${i.fcname.replace(
-            /^\s+|\s+$/gm,
-            ""
-          )}`,
-          description: `${i.fcname.replace(/^\s+|\s+$/gm, "")}`,
-          unit: u,
-        });
-      });
-      setProductData(doc);
-    }
-  };
-
   const selectedBookingData = (txt) => {
     // console.dir(txt);
     if (txt) setBooking(txt);
   };
 
-  const selectedWhsData = (txt) => {
+  const selectedFromWhsData = (txt) => {
     // console.dir(txt);
-    if (txt) setWhs(txt);
+    if (txt) setFromWhs(txt);
+  };
+
+  const selectedToWhsData = (txt) => {
+    // console.dir(txt);
+    if (txt) setToWhs(txt);
   };
 
   const selectedCoorData = (txt) => {
@@ -329,104 +289,12 @@ const AddAdjustPage = () => {
     if (txt) setDepartment(txt);
   };
 
-  const selectedUnitData = (txt) => {
-    if (txt) {
-      console.dir(txt);
-      setSelectUnit(txt);
-    }
+  const AddItem = (e) => {
+    e.preventDefault();
+    setExcelName(e.target.files[0].name);
   };
 
-  const selectedProductData = (txt) => {
-    if (txt) {
-      setIsClearUnit(false);
-      setSelectProduct(txt);
-      if (txt.unit !== undefined) {
-        // let a = unitData.filter((x) => x.id === txt.unit.id);
-        setTxtFilterUnit(txt.unit.id);
-      }
-    }
-  };
-
-  const AddItem = () => {
-    if (selectProduct === undefined || selectProduct.length === 0) {
-      return toast({
-        title: "ข้อความแจ้งเตือน",
-        description: "กรุณาระบุสินค้าด้วย",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-        position: "top",
-      });
-    }
-
-    if (selectQty <= 0) {
-      return toast({
-        title: "ข้อความแจ้งเตือน",
-        description: "กรุณาระบุจำนวนที่ต้องการด้วย",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-        position: "top",
-      });
-    }
-
-    if (selectUnit === null || selectUnit.length === 0) {
-      return toast({
-        title: "ข้อความแจ้งเตือน",
-        description: "กรุณาระบุหน่วยด้วย",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-        position: "top",
-      });
-    }
-
-    if (selectPrice <= 0) {
-      return toast({
-        title: "ข้อความแจ้งเตือน",
-        description: "กรุณาระบุราคาด้วย",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-        position: "top",
-      });
-    }
-
-    let doc = {
-      product: selectProduct,
-      qty: selectQty,
-      unit: selectUnit,
-      price: selectPrice,
-    };
-
-    if (items.length > 0) {
-      const x = items.map((i) => {
-        if (i.product.code === doc.product.code) {
-          return i;
-        }
-        return null;
-      });
-      if (x[0]) {
-        setItems((prevState) => {
-          const newItems = [...prevState];
-          newItems.map((i) => {
-            if (i.product.code === doc.product.code) {
-              i.qty = parseFloat(i.qty) + parseFloat(doc.qty);
-              i.price = parseFloat(doc.price);
-            }
-          });
-          return newItems;
-        });
-      } else {
-        setItems([...items, doc]);
-      }
-    } else {
-      setItems([doc]);
-    }
-    // console.dir(doc);
-    setIsClearProduct(true);
-    setIsClearUnit(true);
-  };
+  const UploadExcel = (e) => inputExcel.current.click();
 
   const SaveData = async () => {
     if (booking === null || booking.length === 0) {
@@ -440,10 +308,21 @@ const AddAdjustPage = () => {
       });
     }
 
-    if (whs === null || whs.length === 0) {
+    if (fromWhs === null || fromWhs.length === 0) {
       return toast({
         title: "ข้อความแจ้งเตือน",
-        description: "กรุณาระบุคลังสินค้าด้วย!",
+        description: "กรุณาระบุจากคลังสินค้าด้วย!",
+        status: "error",
+        duration: 3000,
+        position: "top",
+        isClosable: true,
+      });
+    }
+
+    if (toWhs === null || toWhs.length === 0) {
+      return toast({
+        title: "ข้อความแจ้งเตือน",
+        description: "กรุณาระบุเข้าคลังสินค้าด้วย!",
         status: "error",
         duration: 3000,
         position: "top",
@@ -508,7 +387,7 @@ const AddAdjustPage = () => {
     let d = new Date();
 
     let postData = {
-      prefix: "ADJ",
+      prefix: "PVF1",
       type: "A",
       step: "I",
       recdate: `${d.getFullYear()}-${("0" + (d.getMonth() + 1)).slice(-2)}-${(
@@ -519,8 +398,8 @@ const AddAdjustPage = () => {
       corp: process.env.CORP_ID,
       proj: process.env.PROJ_ID,
       booking: booking.id,
-      from_whs: "",
-      to_whs: whs.id,
+      from_whs: fromWhs.id,
+      to_whs: toWhs.id,
       coor: coor.id,
       department: department.id,
       invoice_no: invNo,
@@ -567,18 +446,6 @@ const AddAdjustPage = () => {
     }
   };
 
-  const UpdateVat = () => {
-    let cost = 0;
-    items.map((i) => {
-      let a = parseFloat(i.price) * parseFloat(i.qty);
-      cost = cost + a;
-    });
-    setSumCost(cost);
-    let v = (vatQty / 100) * cost;
-    setVatCost(parseFloat(v).toFixed(2));
-    setSumVat(v + cost);
-  };
-
   const UpdateProduct = () => {
     console.dir(editData);
     setItems((prev) => {
@@ -591,28 +458,15 @@ const AddAdjustPage = () => {
       });
       return item;
     });
-    UpdateVat();
   };
 
   useEffect(() => {
-    if (isClearProduct) {
-      setSelectProduct(null);
-      setSelectQty(0);
-      setSelectUnit(null);
-      setSelectPrice(0);
-    }
-    UpdateVat();
-  }, [isClearProduct]);
-
-  useEffect(() => {
     if (session?.user) {
-      // setTxtFilterUnit(null);
       fetchBooking(null);
-      fetchWhs("003,005");
+      fetchWhs("YYY,003");
       fetchCoor(null);
       fetchDepartment(null);
-      fetchUnit(null);
-      fetchProduct(null);
+      fetchUnit();
     }
   }, [session]);
 
@@ -716,7 +570,7 @@ const AddAdjustPage = () => {
               <Link href={"/"}>หน้าแรก</Link>
             </li>
             <li>
-              <Link href={"/adjust"}>ใบรับสินค้าชั่วคราว</Link>
+              <Link href={"/pvf1"}>ใบรับสินค้า PVF1</Link>
             </li>
             <li>เพิ่มข้อมูลรับสินค้า</li>
           </ul>
@@ -734,11 +588,23 @@ const AddAdjustPage = () => {
               />
             </div>
             <div className="flex space-x-4">
-              <AutoComplete
-                label="คลังสินค้า"
+              <AutoCompleteWhs
+                label="จากคลังสินค้า"
                 data={whsData}
-                selectedData={selectedWhsData}
+                selectedData={selectedFromWhsData}
                 queryData={(name) => fetchWhs(name)}
+                isClear={false}
+                filterTxt={editFromWhs?.id}
+              />
+            </div>
+            <div className="flex space-x-4">
+              <AutoCompleteWhs
+                label="เข้าคลังสินค้า"
+                data={whsData}
+                selectedData={selectedToWhsData}
+                queryData={(name) => fetchWhs(name)}
+                isClear={false}
+                filterTxt={editToWhs?.id}
               />
             </div>
           </div>
@@ -762,70 +628,21 @@ const AddAdjustPage = () => {
             </div>
           </div>
           <div className="flex space-x-4 pt-2">
-            <div className="pt-2">เลขที่ INVOCIE:</div>
+            <div className="pt-2">หมายเหตุ:</div>
             <>
-              <Input
-                type="text"
+              <Textarea
+                fullWidth
                 value={invNo}
                 onChange={(e) => setInvNo(e.target.value)}
               />
             </>
-            {/* <div className="pt-2">เลขที่ PO:</div>
-            <>
-              <Input type="text" />
-            </> */}
           </div>
         </div>
         <div className="divider" />
         <div className="flex justify-between space-x-4">
-          <div className="flex justify-start space-x-4">
-            <div className="flex space-x-4 pt-2">
-              <AutoComplete
-                fullName={false}
-                label="รหัสสินค้า"
-                textWidth="w-fit"
-                ulWidth="w-96"
-                data={productData}
-                selectedData={selectedProductData}
-                queryData={(name) => fetchProduct(name)}
-                isClear={isClearProduct}
-              />
-            </div>
-            <div className="flex space-x-4 pt-2">
-              <div className="pt-2">จำนวน:</div>
-              <>
-                <Input
-                  type="number"
-                  value={selectQty}
-                  onChange={(e) => setSelectQty(e.target.value)}
-                />
-              </>
-            </div>
-            <div className="pt-2">
-              <AutoCompleteUnit
-                name="unit"
-                txtLimit={2}
-                label=""
-                textWidth="w-28"
-                data={unitData}
-                selectedData={selectedUnitData}
-                isClear={isClearUnit}
-                filterTxt={txtFilterUnit}
-              />
-            </div>
-            <div className="flex space-x-4 pt-2">
-              <div className="pt-2">ราคา/หน่วย:</div>
-              <>
-                <Input
-                  type="number"
-                  value={selectPrice}
-                  onChange={(e) => setSelectPrice(e.target.value)}
-                />
-              </>
-            </div>
-          </div>
           <div className="pt-2">
             <Button
+              color={"success"}
               auto
               icon={
                 <svg
@@ -839,14 +656,21 @@ const AddAdjustPage = () => {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M12 4.5v15m7.5-7.5h-15"
+                    d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0112 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5"
                   />
                 </svg>
               }
-              onPress={AddItem}
+              onPress={UploadExcel}
             >
-              เพิ่มข้อมูล
+              อัพโหลด Excel {excelName ? `${excelName}` : ""}
             </Button>
+            <input
+              ref={inputExcel}
+              accept=".csv,.xls,.xlsx"
+              type="file"
+              className="hidden"
+              onChange={AddItem}
+            />
           </div>
         </div>
         <div className="pt-4">
@@ -864,8 +688,6 @@ const AddAdjustPage = () => {
               <Table.Column>ชื่อสินค้า</Table.Column>
               <Table.Column>จำนวน</Table.Column>
               <Table.Column>หน่วย</Table.Column>
-              <Table.Column>ราคา</Table.Column>
-              <Table.Column>มูลค่า</Table.Column>
               <Table.Column></Table.Column>
             </Table.Header>
             <Table.Body>
@@ -876,10 +698,6 @@ const AddAdjustPage = () => {
                   <Table.Cell>{i.product.description}</Table.Cell>
                   <Table.Cell>{parseInt(i.qty).toLocaleString()}</Table.Cell>
                   <Table.Cell>{i.unit.description}</Table.Cell>
-                  <Table.Cell>
-                    {parseFloat(i.price).toLocaleString()}
-                  </Table.Cell>
-                  <Table.Cell>{(i.qty * i.price).toLocaleString()}</Table.Cell>
                   <Table.Cell>
                     <div className="flex space-x-2 justify-end w-full">
                       <Button
@@ -903,7 +721,6 @@ const AddAdjustPage = () => {
                           </svg>
                         }
                         onPress={() => {
-                          console.dir(i);
                           setEditData(i);
                           setEditQty(i.qty);
                           window.my_modal_1.showModal();
@@ -941,49 +758,6 @@ const AddAdjustPage = () => {
               ))}
             </Table.Body>
           </Table>
-        </div>
-        <div className="divider" />
-        <div className="flex justify-end space-x-4">
-          <div className="flex space-x-4 pt-2">
-            <div className="pt-2">จำนวนสินค้า:</div>
-            <>
-              <Input
-                readOnly
-                type="text"
-                value={items.length.toLocaleString()}
-              />
-            </>
-          </div>
-          <div className="flex space-x-4 pt-2">
-            <div className="pt-2">มูลค่าสินค้า:</div>
-            <>
-              <Input
-                readOnly
-                type="text"
-                value={parseFloat(sumCost).toLocaleString()}
-              />
-            </>
-          </div>
-        </div>
-        <div className="flex justify-end space-x-4">
-          <div className="flex space-x-4 pt-2">
-            <div className="pt-2">มูลค่า VAT ${vatQty}%:</div>
-            <>
-              <Input
-                readOnly
-                type="text"
-                value={`${vatCost.toLocaleString()}`}
-              />
-            </>
-          </div>
-        </div>
-        <div className="flex justify-end space-x-4">
-          <div className="flex space-x-4 pt-2">
-            <div className="pt-2">ยอดรวม:</div>
-            <>
-              <Input readOnly type="text" value={sumVat.toLocaleString()} />
-            </>
-          </div>
         </div>
         <div className="flex justify-end space-x-4 pt-4 mt-4">
           <Button
