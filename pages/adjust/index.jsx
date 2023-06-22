@@ -30,6 +30,7 @@ const AdjustPage = () => {
       redirect: "follow",
     };
 
+    console.log(`${process.env.API_HOST}/glHistory?fctype=ADJ`);
     const res = await fetch(
       `${process.env.API_HOST}/glHistory?fctype=ADJ`,
       requestOptions
@@ -52,6 +53,7 @@ const AdjustPage = () => {
           fcrefno: i.fcrefno,
           fcdate: date,
           fcinvoice: i.fcinvoice,
+          fctype: i.fctype,
           fcstatus: txt,
           fcremark: i.fcremark,
         });

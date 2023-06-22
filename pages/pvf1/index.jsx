@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 
 const status = [
   // { text: "Adjust", color: "primary", remark: "" },
-  { text: "Transfer", color: "secondary", remark: "" },
+  { text: "รายละเอียด", color: "secondary", remark: "" },
   { text: "Success", color: "success", remark: "" },
   { text: "Failed", color: "error", remark: "" },
 ];
@@ -53,6 +53,7 @@ const AdjustPage = () => {
           fcdate: date,
           fcinvoice: i.fcinvoice,
           fcstatus: txt,
+          fctype: i.fctype,
           fcremark: i.fcremark,
         });
       });
@@ -241,7 +242,7 @@ const AdjustPage = () => {
                     <Table.Cell>{i.fccode}</Table.Cell>
                     <Table.Cell>
                       <Link
-                        href={`/adjust/detail?is_add=false&edit=${
+                        href={`/pvf1/detail?is_add=false&edit=${
                           i.fcstatus.text === "Transfer"
                         }&type=${i.fcstatus.text}&id=${i.fcskid}&title=${
                           i.fcstatus.text === "Transfer"
@@ -256,7 +257,7 @@ const AdjustPage = () => {
                     <Table.Cell>{i.fcinvoice}</Table.Cell>
                     <Table.Cell>
                       <Link
-                        href={`/adjust/detail?is_add=false&edit=${
+                        href={`/pvf1/detail?is_add=false&edit=${
                           i.fcstatus.text === "Transfer"
                         }&type=${i.fcstatus.text}&id=${i.fcskid}&title=${
                           i.fcstatus.text === "Transfer"

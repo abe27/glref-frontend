@@ -38,7 +38,7 @@ const AddAdjustPage = () => {
   const [toWhs, setToWhs] = useState([]);
   const [coor, setCoor] = useState([]);
   const [department, setDepartment] = useState([]);
-  const [invNo, setInvNo] = useState("");
+  const [invNo, setInvNo] = useState("-");
 
   const [editData, setEditData] = useState(null);
   const [editFromWhs, setEditFromWhs] = useState(null);
@@ -372,16 +372,16 @@ const AddAdjustPage = () => {
       });
     }
 
-    if (coor === null || coor.length === 0) {
-      return toast({
-        title: "ข้อความแจ้งเตือน",
-        description: "กรุณาระบุผู้ขายด้วย!",
-        status: "error",
-        duration: 3000,
-        position: "top",
-        isClosable: true,
-      });
-    }
+    // if (coor === null || coor.length === 0) {
+    //   return toast({
+    //     title: "ข้อความแจ้งเตือน",
+    //     description: "กรุณาระบุผู้ขายด้วย!",
+    //     status: "error",
+    //     duration: 3000,
+    //     position: "top",
+    //     isClosable: true,
+    //   });
+    // }
 
     if (department === null || department.length === 0) {
       return toast({
@@ -394,16 +394,16 @@ const AddAdjustPage = () => {
       });
     }
 
-    if (invNo === null || invNo.length === 0) {
-      return toast({
-        title: "ข้อความแจ้งเตือน",
-        description: "กรุณาระบุเลขที่ Invoice ด้วย!",
-        status: "error",
-        duration: 3000,
-        position: "top",
-        isClosable: true,
-      });
-    }
+    // if (invNo === null || invNo.length === 0) {
+    //   return toast({
+    //     title: "ข้อความแจ้งเตือน",
+    //     description: "กรุณาระบุเลขที่ Invoice ด้วย!",
+    //     status: "error",
+    //     duration: 3000,
+    //     position: "top",
+    //     isClosable: true,
+    //   });
+    // }
 
     if (items === null || items.length === 0) {
       return toast({
@@ -441,7 +441,7 @@ const AddAdjustPage = () => {
       booking: booking.id,
       from_whs: fromWhs.id,
       to_whs: toWhs.id,
-      coor: coor.id,
+      coor: "",
       department: department.id,
       invoice_no: invNo,
       items: p,
@@ -631,7 +631,7 @@ const AddAdjustPage = () => {
             </div>
           </div>
           <div className="flex space-x-4 pt-2">
-            <div className="flex space-x-4">
+            {/* <div className="flex space-x-4">
               <AutoComplete
                 label="รหัสผู้ขาย"
                 textWidth="w-96"
@@ -639,7 +639,7 @@ const AddAdjustPage = () => {
                 selectedData={selectedCoorData}
                 queryData={(name) => fetchCoor(name)}
               />
-            </div>
+            </div> */}
             <div className="flex space-x-4">
               <AutoComplete
                 label="รหัสแผนก"
