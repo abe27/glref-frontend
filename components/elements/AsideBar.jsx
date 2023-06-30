@@ -43,7 +43,7 @@ const ListMenu = ({ title, obj, filter, refLink }) => {
           <AccordionIcon />
         </AccordionButton>
       </h2>
-      <AccordionPanel pb={4}>
+      <AccordionPanel pb={5}>
         <UnorderedList>
           {obj?.map((i) =>
             i.type == filter ? (
@@ -123,14 +123,14 @@ const AsideBar = () => {
   }, [session]);
 
   return (
-    <aside className="flex flex-col w-80 h-screen px-8 py-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700">
+    <aside className="flex flex-col w-80 lg:w-1/5 h-screen px-8 py-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700">
       <div className="flex flex-col justify-between flex-1">
         <nav className="-mx-3 space-y-6 ">
           <div className="">
             <span className="px-3 text-xs text-gray-500 uppercase dark:text-gray-400">
               เมนูหลัก
             </span>
-            <Accordion defaultIndex={[0]} allowMultiple>
+            <Accordion defaultIndex={[0]} allowToggle>
               <AccordionItem>
                 <h2>
                   <AccordionButton>
