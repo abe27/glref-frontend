@@ -31,7 +31,7 @@ const AdjustPage = () => {
     };
 
     const res = await fetch(
-      `${process.env.API_HOST}/glHistory?fctype=FR`,
+      `${process.env.API_HOST}/glHistory?fctype=TR`,
       requestOptions
     );
 
@@ -100,8 +100,8 @@ const AdjustPage = () => {
 
   return (
     <MainLayOut
-      title="ใบรับสินค้า PVF1"
-      description="รายการใบรับสินค้าประเภท PVF1"
+      title="ใบโอนสินค้า TR"
+      description="รายการใบโอนสินค้าประเภท TR"
     >
       <>
         <div className="grid-cols-1 container">
@@ -144,8 +144,8 @@ const AdjustPage = () => {
             </div>
             <div className="flex justify-end">
               <div className="flex justify-between space-x-4">
-                <Tooltip content="เพิ่มรายการรับสินค้าใหม่">
-                  <Link href={`/pvf1/add?title=เพิ่มรายการรับสินค้า`}>
+                <Tooltip content="เพิ่มรายการใหม่">
+                  <Link href={`/transfer/add?title=เพิ่มรายการโอนสินค้า`}>
                     <Button
                       size={"md"}
                       auto
@@ -242,7 +242,7 @@ const AdjustPage = () => {
                     <Table.Cell>{i.fccode}</Table.Cell>
                     <Table.Cell>
                       <Link
-                        href={`/pvf1/detail?is_add=false&edit=${
+                        href={`/transfer/detail?is_add=false&edit=${
                           i.fcstatus.text === "Transfer"
                         }&type=${i.fcstatus.text}&id=${i.fcskid}&title=${
                           i.fcstatus.text === "Transfer"
@@ -257,7 +257,7 @@ const AdjustPage = () => {
                     <Table.Cell>{i.fcinvoice}</Table.Cell>
                     <Table.Cell>
                       <Link
-                        href={`/pvf1/detail?is_add=false&edit=${
+                        href={`/transfer/detail?is_add=false&edit=${
                           i.fcstatus.text === "Transfer"
                         }&type=${i.fcstatus.text}&id=${i.fcskid}&title=${
                           i.fcstatus.text === "Transfer"

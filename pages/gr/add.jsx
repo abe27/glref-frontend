@@ -104,7 +104,7 @@ const AddAdjustPage = () => {
     };
 
     const res = await fetch(
-      `${process.env.API_HOST}/book?type=FR`,
+      `${process.env.API_HOST}/book?type=GR`,
       requestOptions
     );
 
@@ -428,7 +428,7 @@ const AddAdjustPage = () => {
     let d = new Date();
 
     let postData = {
-      prefix: "FR",
+      prefix: "GR",
       type: "G",
       step: "I",
       recdate: `${d.getFullYear()}-${("0" + (d.getMonth() + 1)).slice(-2)}-${(
@@ -471,7 +471,7 @@ const AddAdjustPage = () => {
         position: "top",
         isClosable: true,
       });
-      return router.push("/pvf1");
+      return router.push("/gr");
     }
 
     if (!res.ok) {
@@ -503,7 +503,8 @@ const AddAdjustPage = () => {
   useEffect(() => {
     if (session?.user) {
       fetchBooking(null);
-      fetchWhs("YYY,003");
+      // fetchWhs("YYY,003");
+      fetchWhs();
       fetchCoor(null);
       fetchDepartment(null);
       // fetchUnit();
@@ -592,9 +593,9 @@ const AddAdjustPage = () => {
               <Link href={"/"}>หน้าแรก</Link>
             </li>
             <li>
-              <Link href={"/pvf1"}>ใบรับสินค้า PVF1</Link>
+              <Link href={"/gr"}>ใบเบิกสินค้า GR</Link>
             </li>
-            <li>เพิ่มข้อมูลรับสินค้า</li>
+            <li>เพิ่มข้อมูลเบิกสินค้า</li>
           </ul>
         </div>
         <div className="pl-4 rounded">
