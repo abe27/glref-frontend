@@ -1,16 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {
-  AutoComplete,
-  AutoCompleteUnit,
-  MainLayOut,
-  AutoCompleteWhs,
-} from "@/components";
+import { AutoComplete, AutoCompleteWhs, MainLayOut } from "@/components";
 import { useToast } from "@chakra-ui/react";
 import { Button, Input, Table, Textarea } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import * as XLSX from "xlsx";
@@ -57,23 +52,22 @@ const AddAdjustPage = () => {
       cancelButtonText: "ปิด",
       preConfirm: () => {
         let doc = [];
-        let i = items;
-        i.map((x) => {
-          if (x.product.code !== obj.product.code) {
+        items.map((x) => {
+          if (x.code !== obj.code) {
             doc.push(x);
           }
         });
 
-        let cost = 0;
-        doc.map((i) => {
-          let a = parseFloat(i.price) * parseFloat(i.qty);
-          cost = cost + a;
-        });
-        setSumCost(cost);
+        // let cost = 0;
+        // doc.map((i) => {
+        //   let a = parseFloat(i.price) * parseFloat(i.qty);
+        //   cost = cost + a;
+        // });
+        // // setSumCost(cost);
 
-        let v = (vatQty / 100) * cost;
-        setVatCost(parseFloat(v).toFixed(2));
-        setSumVat(v + cost);
+        // let v = (vatQty / 100) * cost;
+        // setVatCost(parseFloat(v).toFixed(2));
+        // setSumVat(v + cost);
         setItems(doc);
         return MySwal.fire({
           title: "ข้อความแจ้งเตือน!",
@@ -126,6 +120,7 @@ const AddAdjustPage = () => {
   };
 
   const fetchWhs = async (name) => {
+    console.dir(name);
     setEditFromWhs(null);
     setEditToWhs(null);
     setWhsData([]);
@@ -159,10 +154,15 @@ const AddAdjustPage = () => {
         });
       });
       setWhsData(doc);
-      let frm = doc.filter((i) => i.code === "YYY");
-      setEditFromWhs(frm[0]);
-      let toWhs = doc.filter((i) => i.code === "003");
-      setEditToWhs(toWhs[0]);
+      if (router.query.from_whs) {
+        let frm = doc.filter((i) => i.code === router.query.from_whs);
+        setEditFromWhs(frm[0]);
+      }
+
+      if (router.query.to_whs) {
+        let toWhs = doc.filter((i) => i.code === router.query.to_whs);
+        setEditToWhs(toWhs[0]);
+      }
     }
   };
 
@@ -339,16 +339,16 @@ const AddAdjustPage = () => {
   const UploadExcel = (e) => inputExcel.current.click();
 
   const SaveData = async () => {
-    if (booking === null || booking.length === 0) {
-      return toast({
-        title: "ข้อความแจ้งเตือน",
-        description: "กรุณาระบุเลขที่ Booking ด้วย!",
-        status: "error",
-        duration: 3000,
-        position: "top",
-        isClosable: true,
-      });
-    }
+    // if (booking === null || booking.length === 0) {
+    //   return toast({
+    //     title: "ข้อความแจ้งเตือน",
+    //     description: "กรุณาระบุเลขที่ Booking ด้วย!",
+    //     status: "error",
+    //     duration: 3000,
+    //     position: "top",
+    //     isClosable: true,
+    //   });
+    // }
 
     if (fromWhs === null || fromWhs.length === 0) {
       return toast({
@@ -428,7 +428,7 @@ const AddAdjustPage = () => {
     let d = new Date();
 
     let postData = {
-      prefix: "FR",
+      prefix: router.query.book_type,
       type: "G",
       step: "I",
       recdate: `${d.getFullYear()}-${("0" + (d.getMonth() + 1)).slice(-2)}-${(
@@ -438,7 +438,7 @@ const AddAdjustPage = () => {
       job: process.env.JOB_ID,
       corp: process.env.CORP_ID,
       proj: process.env.PROJ_ID,
-      booking: booking.id,
+      booking: router.query.book_id,
       from_whs: fromWhs.id,
       to_whs: toWhs.id,
       coor: "",
@@ -446,6 +446,8 @@ const AddAdjustPage = () => {
       invoice_no: invNo,
       items: p,
     };
+
+    console.dir(postData);
 
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -471,7 +473,7 @@ const AddAdjustPage = () => {
         position: "top",
         isClosable: true,
       });
-      return router.push("/pvf1");
+      return router.back();
     }
 
     if (!res.ok) {
@@ -503,12 +505,12 @@ const AddAdjustPage = () => {
   useEffect(() => {
     if (session?.user) {
       fetchBooking(null);
-      fetchWhs("YYY,003");
+      fetchWhs(router.query.whs_filter);
       fetchCoor(null);
       fetchDepartment(null);
       // fetchUnit();
     }
-  }, [session]);
+  }, [router]);
 
   return (
     <>
@@ -592,14 +594,14 @@ const AddAdjustPage = () => {
               <Link href={"/"}>หน้าแรก</Link>
             </li>
             <li>
-              <Link href={"/pvf1"}>ใบรับสินค้า PVF1</Link>
+              <Link href={"/"}>{router.query.book_description}</Link>
             </li>
             <li>เพิ่มข้อมูลรับสินค้า</li>
           </ul>
         </div>
         <div className="pl-4 rounded">
           <div className="flex space-x-4">
-            <div className="flex space-x-4">
+            {/* <div className="flex space-x-4">
               <AutoComplete
                 textWidth="w-96"
                 txtLimit={2}
@@ -608,7 +610,7 @@ const AddAdjustPage = () => {
                 selectedData={selectedBookingData}
                 queryData={(name) => fetchBooking(name)}
               />
-            </div>
+            </div> */}
             <div className="flex space-x-4">
               <AutoCompleteWhs
                 label="จากคลังสินค้า"

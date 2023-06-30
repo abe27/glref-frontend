@@ -1,9 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { BreadcrumbExample } from "@/components";
 import MainLayOut from "@/components/layout";
 import { useToast } from "@chakra-ui/react";
 import { Badge, Button, Input, Table, Tooltip } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 const status = [
@@ -15,9 +17,11 @@ const status = [
 
 const AdjustPage = () => {
   const { data: session } = useSession();
+  const router = useRouter();
   const [filterDate, setFilterDate] = useState(null);
   const [data, setData] = useState([]);
   const toast = useToast();
+  const [linkDescription, setLinkDescription] = useState(null);
 
   const fetchData = async () => {
     setData([]);
@@ -30,8 +34,12 @@ const AdjustPage = () => {
       redirect: "follow",
     };
 
+    console.dir(
+      `${process.env.API_HOST}/glHistory?fctype=${router.query.book_id}`
+    );
+
     const res = await fetch(
-      `${process.env.API_HOST}/glHistory?fctype=TR`,
+      `${process.env.API_HOST}/glHistory?fctype=${router.query.book_id}`,
       requestOptions
     );
 
@@ -93,18 +101,32 @@ const AdjustPage = () => {
   }, [filterDate]);
 
   useEffect(() => {
+    setLinkDescription(router.query.description);
     if (session?.user) {
       fetchData();
     }
-  }, []);
+  }, [router]);
 
   return (
     <MainLayOut
-      title="ใบโอนสินค้า TR"
-      description="รายการใบโอนสินค้าประเภท TR"
+      title={router.query.description}
+      description={router.query.description}
     >
       <>
         <div className="grid-cols-1 container">
+          <div>
+            <BreadcrumbExample
+              link={[
+                { name: "หน้าแรก", href: "/", active: false },
+                {
+                  name: "เอกสารใบรับสินค้า",
+                  href: router.asPath,
+                  active: false,
+                },
+                { name: linkDescription, href: "/fr", active: true },
+              ]}
+            />
+          </div>
           <div className="flex justify-between mb-4 p-4">
             <div className="flex justify-start">
               <div className="flex justify-between space-x-2">
@@ -144,8 +166,10 @@ const AdjustPage = () => {
             </div>
             <div className="flex justify-end">
               <div className="flex justify-between space-x-4">
-                <Tooltip content="เพิ่มรายการใหม่">
-                  <Link href={`/transfer/add?title=เพิ่มรายการโอนสินค้า`}>
+                <Tooltip content="เพิ่มรายการรับสินค้าใหม่">
+                  <Link
+                    href={`/booking/add?book_id=${router.query.book_id}&book_type=${router.query.book_type}&book_description=${router.query.description}&from_whs=YYY&to_whs=003&whs_filter=YYY,003&title=เพิ่มรายการรับสินค้า`}
+                  >
                     <Button
                       size={"md"}
                       auto
@@ -242,13 +266,13 @@ const AdjustPage = () => {
                     <Table.Cell>{i.fccode}</Table.Cell>
                     <Table.Cell>
                       <Link
-                        href={`/transfer/detail?is_add=false&edit=${
+                        href={`/booking/detail?is_add=false&edit=${
                           i.fcstatus.text === "Transfer"
                         }&type=${i.fcstatus.text}&id=${i.fcskid}&title=${
                           i.fcstatus.text === "Transfer"
                             ? "Transfer ข้อมูล"
                             : "ข้อมูลเพิ่มเติม"
-                        }`}
+                        }&description=เอกสารใบรับสินค้า`}
                       >
                         {i.fcrefno}
                       </Link>
@@ -257,13 +281,13 @@ const AdjustPage = () => {
                     <Table.Cell>{i.fcinvoice}</Table.Cell>
                     <Table.Cell>
                       <Link
-                        href={`/transfer/detail?is_add=false&edit=${
+                        href={`/booking/detail?is_add=false&edit=${
                           i.fcstatus.text === "Transfer"
                         }&type=${i.fcstatus.text}&id=${i.fcskid}&title=${
                           i.fcstatus.text === "Transfer"
                             ? "Transfer ข้อมูล"
                             : "ข้อมูลเพิ่มเติม"
-                        }`}
+                        }&description=เอกสารใบรับสินค้า`}
                       >
                         <Button
                           size={"sm"}

@@ -211,9 +211,14 @@ const AddAdjustDetailPage = () => {
                   <Link href={"/"}>หน้าแรก</Link>
                 </li>
                 <li>
-                  <Link href={"/gr"}>ใบเบิกสินค้า GR</Link>
+                  <span
+                    className="text-blue-500 hover:cursor-pointer"
+                    onClick={() => router.back()}
+                  >
+                    {router.query.description}
+                  </span>
                 </li>
-                <li>รายละเอียดข้อมูลเบิกสินค้า</li>
+                <li>ข้อมูลเพิ่มเติม</li>
               </ul>
             </div>
             <div className="pl-4 rounded">

@@ -9,6 +9,7 @@ const nextConfig = {
     JOB_ID: process.env.JOB_ID,
     CORP_ID: process.env.CORP_ID,
     PROJ_ID: process.env.PROJ_ID,
+    BOOK_FILTER: process.env.BOOK_FILTER,
     JWT_SECRET: process.env.JWT_SECRET,
   },
 };
