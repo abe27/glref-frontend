@@ -5,6 +5,7 @@ import AutoComplete from "./elements/AutoComplete";
 import AutoCompleteUnit from "./elements/AutoCompleteUnit";
 import AutoCompleteWhs from "./elements/AutoCompleteWhs";
 import BreadcrumbExample from "./elements/Breadcrumb"
+import ScanQrCode from "./elements/ScanQrCode";
 
 export {
   NavBar,
@@ -14,4 +15,5 @@ export {
   AutoCompleteUnit,
   AutoCompleteWhs,
   BreadcrumbExample,
+  ScanQrCode,
 };

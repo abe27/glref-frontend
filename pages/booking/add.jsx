@@ -1,7 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { AutoComplete, AutoCompleteWhs, MainLayOut } from "@/components";
+import {
+  AutoComplete,
+  AutoCompleteWhs,
+  MainLayOut,
+  ScanQrCode,
+} from "@/components";
 import { useToast } from "@chakra-ui/react";
-import { Button, Input, Table, Textarea } from "@nextui-org/react";
+import { Popover, Button, Input, Table, Textarea } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -16,7 +21,7 @@ const AddAdjustPage = () => {
   const toast = useToast();
   const { data: session } = useSession();
   const router = useRouter();
-  const { title } = router.query;
+  const { title, from_whs, to_whs } = router.query;
   const [bookingData, setBookingData] = useState([]);
   const [whsData, setWhsData] = useState([]);
   const [coorData, setCoorData] = useState([]);
@@ -502,6 +507,10 @@ const AddAdjustPage = () => {
     });
   };
 
+  const onScanQrCode = (txt) => {
+    console.dir(txt);
+  };
+
   useEffect(() => {
     if (session?.user) {
       fetchBooking(null);
@@ -696,6 +705,9 @@ const AddAdjustPage = () => {
               onChange={AddItem}
             />
           </div>
+          {/* <div className="">
+            <ScanQrCode handlerResult={onScanQrCode} />
+          </div> */}
         </div>
         <div className="pt-4">
           <Table
@@ -783,7 +795,7 @@ const AddAdjustPage = () => {
             </Table.Body>
           </Table>
         </div>
-        <div className="flex justify-end space-x-4 pt-4 mt-4">
+        <div className="flex justify-end space-x-4 pt-4 mt-4 -z-50">
           <Button
             auto
             icon={

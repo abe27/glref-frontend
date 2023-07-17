@@ -168,7 +168,7 @@ const AdjustPage = () => {
               <div className="flex justify-between space-x-4">
                 <Tooltip content="เพิ่มรายการรับสินค้าใหม่">
                   <Link
-                    href={`/booking/add?book_id=${router.query.book_id}&book_type=${router.query.book_type}&book_description=${router.query.description}&from_whs=&to_whs=&title=เพิ่มรายการรับสินค้า`}
+                    href={`/booking/add?book_id=${router.query.book_id}&book_type=${router.query.book_type}&book_description=${router.query.description}&from_whs=001&to_whs=XXX&title=เพิ่มรายการรับสินค้า`}
                   >
                     <Button
                       size={"md"}
