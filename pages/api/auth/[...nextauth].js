@@ -19,7 +19,7 @@ export const authOptions = {
           password: credentials.password,
         });
 
-        // console.log(`${process.env.API_HOST}/login`);
+        console.log(`${process.env.API_HOST}/login`);
         var requestOptions = {
           method: "POST",
           headers: myHeaders,
