@@ -92,13 +92,14 @@ const AsideBar = () => {
     };
 
     const res = await fetch(
-      `${process.env.API_HOST}/book?type=${process.env.BOOK_FILTER}`,
+      `${process.env.API_HOST}/book?type=BI,FR,TR,WR`,
       requestOptions
     );
 
     let doc = [];
     if (res.ok) {
       const data = await res.json();
+      console.dir(data.data);
       data.data.map((i) => {
         doc.push({
           id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
@@ -187,6 +188,12 @@ const AsideBar = () => {
                   </AccordionButton>
                 </h2>
               </AccordionItem>
+              <ListMenu
+                title={"ใบรับสินค้าชั่วคราว(BI)"}
+                obj={bookData}
+                filter={"BI"}
+                refLink={"bi"}
+              />
               <ListMenu
                 title={"ใบรับสินค้า(FR)"}
                 obj={bookData}
