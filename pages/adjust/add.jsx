@@ -1,5 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { AutoComplete, AutoCompleteUnit, MainLayOut } from "@/components";
+import {
+  AutoComplete,
+  AutoCompleteUnit,
+  AutoCompleteBooking,
+  MainLayOut,
+} from "@/components";
 import { useToast } from "@chakra-ui/react";
 import { Button, Input, Table } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
@@ -113,16 +118,24 @@ const AddAdjustPage = () => {
       let doc = [];
       const data = await res.json();
       data.data.map((i) => {
-        doc.push({
-          id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
-          code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
-          name: `${i.fccode.replace(/^\s+|\s+$/gm, "")}-${i.fcname.replace(
-            /^\s+|\s+$/gm,
-            ""
-          )}`,
-        });
+        if (`${i.fccode.replace(/^\s+|\s+$/gm, "")}` === "INV.") {
+          doc.push({
+            rnn: doc.length,
+            id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
+            code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
+            name: `${i.fccode.replace(/^\s+|\s+$/gm, "")}-${i.fcname.replace(
+              /^\s+|\s+$/gm,
+              ""
+            )}`,
+          });
+        }
       });
       setBookingData(doc);
+      if (doc) {
+        let frm = doc.filter((i) => i.code === "INV.");
+        console.dir(frm);
+        setBooking(frm[0]);
+      }
     }
   };
 
@@ -137,7 +150,7 @@ const AddAdjustPage = () => {
       redirect: "follow",
     };
 
-    // console.dir(`${process.env.API_HOST}/whs?type=${name}`);
+    console.dir(`${process.env.API_HOST}/whs?type=${name}`);
     const res = await fetch(
       `${process.env.API_HOST}/whs?type=${name}`,
       requestOptions
@@ -211,6 +224,7 @@ const AddAdjustPage = () => {
       const data = await res.json();
       data.data.map((i) => {
         doc.push({
+          rnn: doc.length,
           id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
           code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
           name: `${i.fccode.replace(/^\s+|\s+$/gm, "")}-${i.fcname.replace(
@@ -220,6 +234,11 @@ const AddAdjustPage = () => {
         });
       });
       setDepartmentData(doc);
+
+      if (doc.length > 0) {
+        let frm = doc.filter((i) => i.code === "-");
+        setDepartment(frm[0]);
+      }
     }
   };
 
@@ -257,6 +276,11 @@ const AddAdjustPage = () => {
         });
       });
       setUnitData(doc);
+
+      // if (doc) {
+      //   let frm = doc.filter((i) => i.code === "001");
+      //   setSelectUnit(frm[0]);
+      // }
     }
   };
 
@@ -340,9 +364,12 @@ const AddAdjustPage = () => {
     if (txt) {
       setIsClearUnit(false);
       setSelectProduct(txt);
+
+      console.dir(txt)
       if (txt.unit !== undefined) {
         // let a = unitData.filter((x) => x.id === txt.unit.id);
         setTxtFilterUnit(txt.unit.id);
+        setSelectUnit(txt.unit);
       }
     }
   };
@@ -724,13 +751,22 @@ const AddAdjustPage = () => {
         <div className="pl-4 rounded">
           <div className="flex space-x-4">
             <div className="flex space-x-4">
-              <AutoComplete
+              {/* <AutoComplete
                 textWidth="w-96"
                 txtLimit={2}
                 label="เล่มเอกสาร"
                 data={bookingData}
                 selectedData={selectedBookingData}
                 queryData={(name) => fetchBooking(name)}
+              /> */}
+
+              <AutoCompleteBooking
+                label="เล่มเอกสาร"
+                data={bookingData}
+                selectedData={selectedBookingData}
+                queryData={(name) => fetchBooking(name)}
+                isClear={false}
+                filterTxt={booking?.id}
               />
             </div>
             <div className="flex space-x-4">
@@ -753,11 +789,19 @@ const AddAdjustPage = () => {
               />
             </div>
             <div className="flex space-x-4">
-              <AutoComplete
+              {/* <AutoComplete
                 label="รหัสแผนก"
                 data={departmentData}
                 selectedData={selectedDepartmentData}
                 queryData={(name) => fetchDepartment(name)}
+              /> */}
+              <AutoCompleteBooking
+                label="รหัสแผนก"
+                data={departmentData}
+                selectedData={selectedDepartmentData}
+                queryData={(name) => fetchDepartment(name)}
+                isClear={false}
+                filterTxt={department?.id}
               />
             </div>
           </div>

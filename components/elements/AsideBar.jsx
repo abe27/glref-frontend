@@ -99,7 +99,7 @@ const AsideBar = () => {
     let doc = [];
     if (res.ok) {
       const data = await res.json();
-      console.dir(data.data);
+      // console.dir(data.data);
       data.data.map((i) => {
         doc.push({
           id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
@@ -188,30 +188,65 @@ const AsideBar = () => {
                   </AccordionButton>
                 </h2>
               </AccordionItem>
-              <ListMenu
+              {/* <ListMenu
                 title={"ใบรับสินค้าชั่วคราว(BI)"}
                 obj={bookData}
                 filter={"BI"}
                 refLink={"bi"}
-              />
+              /> */}
               <ListMenu
                 title={"ใบรับสินค้า(FR)"}
                 obj={bookData}
                 filter={"FR"}
                 refLink={"fr"}
               />
-              <ListMenu
+              {/* <ListMenu
                 title={"ใบเบิกสินค้า(WR)"}
                 obj={bookData}
                 filter={"WR"}
                 refLink={"wr"}
-              />
-              <ListMenu
+              /> */}
+              {/* <ListMenu
                 title={"ใบโอนสินค้า(TR)"}
                 obj={bookData}
                 filter={"TR"}
                 refLink={"tr"}
-              />
+              /> */}
+              <AccordionItem>
+                <h2>
+                  <AccordionButton
+                    onClick={() => router.push("/import_product.csv")}
+                  >
+                    <Box as="span" flex="1" textAlign="left">
+                      <div className="flex justify-start">
+                        {" "}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="icon icon-tabler icon-tabler-download w-5 h-5"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                          stroke="currentColor"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path
+                            stroke="none"
+                            d="M0 0h24v24H0z"
+                            fill="none"
+                          ></path>
+                          <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"></path>
+                          <path d="M7 11l5 5l5 -5"></path>
+                          <path d="M12 4l0 12"></path>
+                        </svg>
+                        <span className="mx-2 text-sm font-medium">
+                          ดาว์นโหลด Excel Import
+                        </span>
+                      </div>
+                    </Box>
+                  </AccordionButton>
+                </h2>
+              </AccordionItem>
             </Accordion>
           </div>
         </nav>

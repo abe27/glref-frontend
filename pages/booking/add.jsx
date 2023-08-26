@@ -314,6 +314,10 @@ const AddAdjustPage = () => {
       let r = 0;
       dataParse.map((i) => {
         if (r > 0) {
+          let partName = "-"
+          if (i[1] !== undefined) {
+            partName = i[1].replace(/^\s+|\s+$/gm, "")
+          }
           let isDuplicate = true;
           if (docs.length > 0) {
             let doc = docs.filter(
@@ -328,7 +332,7 @@ const AddAdjustPage = () => {
           if (isDuplicate) {
             docs.push({
               code: i[0].replace(/^\s+|\s+$/gm, ""),
-              description: i[1].replace(/^\s+|\s+$/gm, ""),
+              description: partName,
               qty: i[2],
               unit: i[3].replace(/^\s+|\s+$/gm, ""),
             });
@@ -433,7 +437,8 @@ const AddAdjustPage = () => {
     let d = new Date();
 
     let postData = {
-      prefix: router.query.book_type,
+      // prefix: router.query.book_type,
+      prefix: router.query.book_id,
       type: "G",
       step: "I",
       recdate: `${d.getFullYear()}-${("0" + (d.getMonth() + 1)).slice(-2)}-${(
