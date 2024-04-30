@@ -114,21 +114,34 @@ const AddAdjustPage = () => {
       requestOptions
     );
 
+    console.dir(res)
+
     if (res.ok) {
       let doc = [];
       const data = await res.json();
+      // console.dir(data)
       data.data.map((i) => {
-        if (`${i.fccode.replace(/^\s+|\s+$/gm, "")}` === "INV.") {
-          doc.push({
-            rnn: doc.length,
-            id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
-            code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
-            name: `${i.fccode.replace(/^\s+|\s+$/gm, "")}-${i.fcname.replace(
-              /^\s+|\s+$/gm,
-              ""
-            )}`,
-          });
-        }
+        // console.log(`${i.fccode.replace(/^\s+|\s+$/gm, "")}`)
+        // if (`${i.fccode.replace(/^\s+|\s+$/gm, "")}` === "INV.") {
+        //   doc.push({
+        //     rnn: doc.length,
+        //     id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
+        //     code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
+        //     name: `${i.fccode.replace(/^\s+|\s+$/gm, "")}-${i.fcname.replace(
+        //       /^\s+|\s+$/gm,
+        //       ""
+        //     )}`,
+        //   });
+        // }
+        doc.push({
+          rnn: doc.length,
+          id: i.fcskid.replace(/^\s+|\s+$/gm, ""),
+          code: `${i.fccode.replace(/^\s+|\s+$/gm, "")}`,
+          name: `${i.fccode.replace(/^\s+|\s+$/gm, "")}-${i.fcname.replace(
+            /^\s+|\s+$/gm,
+            ""
+          )}`,
+        });
       });
       setBookingData(doc);
       if (doc) {
