@@ -47,6 +47,7 @@ const AddAdjustPage = () => {
   const [coor, setCoor] = useState([]);
   const [department, setDepartment] = useState([]);
   const [invNo, setInvNo] = useState(null);
+  const [poNo, setPoNo] = useState(null);
 
   const [editData, setEditData] = useState(null);
   const [editQty, setEditQty] = useState(0);
@@ -114,7 +115,7 @@ const AddAdjustPage = () => {
       requestOptions
     );
 
-    console.dir(res)
+    console.dir(res);
 
     if (res.ok) {
       let doc = [];
@@ -378,7 +379,7 @@ const AddAdjustPage = () => {
       setIsClearUnit(false);
       setSelectProduct(txt);
 
-      console.dir(txt)
+      console.dir(txt);
       if (txt.unit !== undefined) {
         // let a = unitData.filter((x) => x.id === txt.unit.id);
         setTxtFilterUnit(txt.unit.id);
@@ -564,6 +565,7 @@ const AddAdjustPage = () => {
       coor: coor.id,
       department: department.id,
       invoice_no: invNo,
+      po_no: poNo,
       items: p,
     };
 
@@ -827,10 +829,14 @@ const AddAdjustPage = () => {
                 onChange={(e) => setInvNo(e.target.value)}
               />
             </>
-            {/* <div className="pt-2">เลขที่ PO:</div>
+            <div className="pt-2">เลขที่ PO:</div>
             <>
-              <Input type="text" />
-            </> */}
+              <Input
+                type="text"
+                value={poNo}
+                onChange={(e) => setPoNo(e.target.value)}
+              />
+            </>
           </div>
         </div>
         <div className="divider" />
